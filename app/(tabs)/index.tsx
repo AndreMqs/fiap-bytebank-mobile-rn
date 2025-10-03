@@ -1,7 +1,7 @@
 import CategoryChart from '@/src/components/CategoryChart/CategoryChart';
 import Summary from '@/src/components/Summary/Summary';
 import { useAuth } from '@/src/contexts/AuthContext';
-import { UserService } from '@/src/services/userService';
+import { UserDataService } from '@/src/services/userDataService';
 import { useStore } from '@/src/store/useStore';
 import { User } from '@/src/types/User';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -35,7 +35,7 @@ export default function HomeScreen() {
   const loadUserData = async () => {
     if (user) {
       try {
-        const userInfo = await UserService.getUser(user.uid);
+        const userInfo = await UserDataService.getUserData(user.uid);
         setUserData(userInfo);
       } catch (error) {
         console.error('Erro ao carregar dados do usuário:', error);

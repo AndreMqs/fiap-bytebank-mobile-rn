@@ -1,5 +1,6 @@
 import { ThemedText } from '@/components/themed-text';
 import Statement from '@/src/components/Statement/Statement';
+import { useUserTransactions } from '@/src/hooks/useUserTransactions';
 import { useStore } from '@/src/store/useStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
@@ -7,7 +8,8 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ExtratoScreen() {
-  const { transactions, deleteTransaction } = useStore();
+  const { transactions, userId } = useUserTransactions();
+  const { deleteTransaction } = useStore();
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -25,7 +27,10 @@ export default function ExtratoScreen() {
 
         {/* Statement Component */}
         <View style={styles.statementContainer}>
-          <Statement transactions={transactions} deleteTransaction={deleteTransaction} />
+          <Statement 
+            transactions={transactions} 
+            deleteTransaction={(id) => userId && deleteTransaction(id, userId)} 
+          />
         </View>
       </ScrollView>
     </SafeAreaView>

@@ -1,7 +1,7 @@
 import { User, createUserWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { auth } from '../lib/firebase';
-import { UserService } from '../services/userService';
+import { UserDataService } from '../services/userDataService';
 import { UserData } from '../types/User';
 
 interface AuthContextType {
@@ -54,7 +54,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         updatedAt: new Date(),
       };
       
-      await UserService.createUser(result.user.uid, userData);
+      await UserDataService.createUser(result.user.uid, userData);
       console.log('Dados do usuário salvos no Firestore');
     } catch (error: any) {
       console.error('Erro no registro:', error);

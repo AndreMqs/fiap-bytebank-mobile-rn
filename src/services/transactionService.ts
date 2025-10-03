@@ -3,19 +3,21 @@ import { db } from '../lib/firebase';
 import { Transaction, TransactionFormData } from '../types/transaction';
 
 export class TransactionService {
-  private static readonly COLLECTION_NAME = 'transactions';
+  private static readonly USERS_COLLECTION = 'users';
+  private static readonly TRANSACTIONS_SUBCOLLECTION = 'transactions';
 
   // Adicionar uma nova transação
   static async addTransaction(transactionData: TransactionFormData, userId: string): Promise<Transaction> {
     try {
-      const transactionWithUser = {
+      const transactionWithTimestamps = {
         ...transactionData,
-        userId,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
 
-      const docRef = await addDoc(collection(db, this.COLLECTION_NAME), transactionWithUser);
+      // Usar subcoleção: users/{userId}/transactions/{transactionId}
+      const userTransactionsRef = collection(db, this.USERS_COLLECTION, userId, this.TRANSACTIONS_SUBCOLLECTION);
+      const docRef = await addDoc(userTransactionsRef, transactionWithTimestamps);
       
       const numericValue = parseFloat(transactionData.value.replace(',', '.'));
       
@@ -26,8 +28,8 @@ export class TransactionService {
         category: transactionData.category as 'Alimentação' | 'Moradia' | 'Saúde' | 'Estudo' | 'Transporte',
         date: transactionData.date,
         userId,
-        createdAt: transactionWithUser.createdAt,
-        updatedAt: transactionWithUser.updatedAt,
+        createdAt: transactionWithTimestamps.createdAt,
+        updatedAt: transactionWithTimestamps.updatedAt,
       };
 
       return newTransaction;
@@ -40,11 +42,9 @@ export class TransactionService {
   // Buscar transações do usuário
   static async getTransactions(userId: string): Promise<Transaction[]> {
     try {
-      const q = query(
-        collection(db, this.COLLECTION_NAME),
-        where('userId', '==', userId),
-        orderBy('createdAt', 'desc')
-      );
+      // Usar subcoleção: users/{userId}/transactions
+      const userTransactionsRef = collection(db, this.USERS_COLLECTION, userId, this.TRANSACTIONS_SUBCOLLECTION);
+      const q = query(userTransactionsRef, orderBy('createdAt', 'desc'));
       
       const querySnapshot = await getDocs(q);
       const transactions: Transaction[] = [];
@@ -57,7 +57,7 @@ export class TransactionService {
           value: data.value,
           category: data.category,
           date: data.date,
-          userId: data.userId,
+          userId,
           createdAt: data.createdAt?.toDate(),
           updatedAt: data.updatedAt?.toDate(),
         });
@@ -71,9 +71,11 @@ export class TransactionService {
   }
 
   // Deletar transação
-  static async deleteTransaction(transactionId: string): Promise<void> {
+  static async deleteTransaction(transactionId: string, userId: string): Promise<void> {
     try {
-      await deleteDoc(doc(db, this.COLLECTION_NAME, transactionId));
+      // Usar subcoleção: users/{userId}/transactions/{transactionId}
+      const transactionRef = doc(db, this.USERS_COLLECTION, userId, this.TRANSACTIONS_SUBCOLLECTION, transactionId);
+      await deleteDoc(transactionRef);
     } catch (error) {
       console.error('Erro ao deletar transação:', error);
       throw new Error('Falha ao deletar transação');
@@ -83,9 +85,10 @@ export class TransactionService {
   // Buscar transações por categoria
   static async getTransactionsByCategory(userId: string, category: string): Promise<Transaction[]> {
     try {
+      // Usar subcoleção: users/{userId}/transactions
+      const userTransactionsRef = collection(db, this.USERS_COLLECTION, userId, this.TRANSACTIONS_SUBCOLLECTION);
       const q = query(
-        collection(db, this.COLLECTION_NAME),
-        where('userId', '==', userId),
+        userTransactionsRef,
         where('category', '==', category),
         orderBy('createdAt', 'desc')
       );
@@ -101,7 +104,7 @@ export class TransactionService {
           value: data.value,
           category: data.category,
           date: data.date,
-          userId: data.userId,
+          userId,
           createdAt: data.createdAt?.toDate(),
           updatedAt: data.updatedAt?.toDate(),
         });
@@ -121,9 +124,10 @@ export class TransactionService {
     endDate: string
   ): Promise<Transaction[]> {
     try {
+      // Usar subcoleção: users/{userId}/transactions
+      const userTransactionsRef = collection(db, this.USERS_COLLECTION, userId, this.TRANSACTIONS_SUBCOLLECTION);
       const q = query(
-        collection(db, this.COLLECTION_NAME),
-        where('userId', '==', userId),
+        userTransactionsRef,
         where('date', '>=', startDate),
         where('date', '<=', endDate),
         orderBy('date', 'desc')
@@ -140,7 +144,7 @@ export class TransactionService {
           value: data.value,
           category: data.category,
           date: data.date,
-          userId: data.userId,
+          userId,
           createdAt: data.createdAt?.toDate(),
           updatedAt: data.updatedAt?.toDate(),
         });

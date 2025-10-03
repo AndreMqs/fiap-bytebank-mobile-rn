@@ -1,9 +1,12 @@
 import { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { TransactionService } from '../services/transactionService';
 import { useStore } from '../store/useStore';
-import { CSVTransaction, TransactionFormData } from '../types/transaction';
+import { CSVTransaction, TransactionData, TransactionFormData } from '../types/transaction';
 
 export const useTransactionForm = () => {
   const { addTransaction } = useStore();
+  const { user } = useAuth();
   
   const getCurrentDate = () => {
     const now = new Date();
@@ -43,6 +46,32 @@ export const useTransactionForm = () => {
     setCsvTransactions([]);
   };
 
+  const addTransactionWithFirebase = async (transactionData: TransactionData) => {
+    try {
+      // Salvar no store local
+      addTransaction(transactionData);
+      
+      // Salvar no Firebase se o usuário estiver autenticado
+      if (user?.uid) {
+        // Converter TransactionData para TransactionFormData (Firebase espera value como string)
+        const firebaseTransactionData: TransactionFormData = {
+          type: transactionData.type,
+          category: transactionData.category,
+          value: transactionData.value.toString(),
+          date: transactionData.date
+        };
+        
+        await TransactionService.addTransaction(firebaseTransactionData, user.uid);
+        console.log('Transação salva no Firebase com sucesso');
+      } else {
+        console.warn('Usuário não autenticado, transação salva apenas localmente');
+      }
+    } catch (error) {
+      console.error('Erro ao salvar transação no Firebase:', error);
+      // Mesmo se der erro no Firebase, a transação já foi salva no store local
+    }
+  };
+
   return {
     formData,
     isFocused,
@@ -56,6 +85,6 @@ export const useTransactionForm = () => {
     setValueError,
     clearForm,
     clearCSV,
-    addTransaction
+    addTransaction: addTransactionWithFirebase
   };
 }; 

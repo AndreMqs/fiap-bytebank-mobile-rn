@@ -1,31 +1,49 @@
-import { addDoc, collection, getDocs } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import { TransactionService } from '../services/transactionService';
+import { UserDataService } from '../services/userDataService';
 
-export const testFirebaseConnection = async () => {
+export const testFirebaseStructure = async (userId: string) => {
   try {
-    console.log('Testando conexão com Firebase...');
+    console.log('🧪 Testando estrutura do Firebase...');
     
-    // Teste simples: tentar adicionar um documento de teste
-    const testData = {
-      test: true,
-      timestamp: new Date(),
-      message: 'Teste de conexão Firebase'
+    // Teste 1: Criar usuário
+    console.log('1. Testando criação de usuário...');
+    const userData = {
+      uid: userId,
+      name: 'Usuário Teste',
+      email: 'teste@email.com',
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
     
-    const docRef = await addDoc(collection(db, 'test'), testData);
-    console.log('Documento de teste criado com ID:', docRef.id);
+    await UserDataService.createUser(userId, userData);
+    console.log('✅ Usuário criado com sucesso');
     
-    // Tentar ler os documentos de teste
-    const querySnapshot = await getDocs(collection(db, 'test'));
-    console.log('Documentos encontrados:', querySnapshot.size);
+    // Teste 2: Buscar usuário
+    console.log('2. Testando busca de usuário...');
+    const retrievedUser = await UserDataService.getUserData(userId);
+    console.log('✅ Usuário encontrado:', retrievedUser?.name);
     
-    querySnapshot.forEach((doc) => {
-      console.log('Documento:', doc.id, '=>', doc.data());
-    });
+    // Teste 3: Criar transação
+    console.log('3. Testando criação de transação...');
+    const transactionData = {
+      type: 'income',
+      category: 'Alimentação',
+      value: '100.50',
+      date: '2024-01-15'
+    };
     
-    return true;
+    const transaction = await TransactionService.addTransaction(transactionData, userId);
+    console.log('✅ Transação criada com sucesso:', transaction.id);
+    
+    // Teste 4: Buscar transações
+    console.log('4. Testando busca de transações...');
+    const transactions = await TransactionService.getTransactions(userId);
+    console.log('✅ Transações encontradas:', transactions.length);
+    
+    console.log('🎉 Todos os testes passaram! Estrutura funcionando corretamente.');
+    
   } catch (error) {
-    console.error('Erro ao testar Firebase:', error);
-    return false;
+    console.error('❌ Erro no teste:', error);
+    throw error;
   }
 };

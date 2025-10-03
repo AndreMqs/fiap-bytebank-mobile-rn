@@ -1,8 +1,7 @@
 import { create } from 'zustand';
-import { api } from '../services/api';
+import { TransactionService } from '../services/transactionService';
 import { StoreState } from '../types/store';
-import { TransactionFormData } from '../types/api';
-import { useUser } from '../hooks/useParentApp';
+import { TransactionData } from '../types/transaction';
 
 export const useStore = create<StoreState>((set, get) => ({
   user: null,
@@ -11,49 +10,38 @@ export const useStore = create<StoreState>((set, get) => ({
   error: null,
 
   fetchUser: async () => {
-    const { getUserName } = useUser();
-    set({ isLoading: true, error: null });
-    try {
-      const user = {...await api.fetchUser(), name: getUserName()};
-      set({ user, isLoading: false });
-    } catch (error) {
-      console.error('Error fetching user:', error);
-      set({ error: 'Erro ao carregar dados do usuário', isLoading: false });
-    }
+    // Esta função será implementada se necessário
+    console.log('fetchUser not implemented yet');
   },
 
-  fetchTransactions: async () => {
+  fetchTransactions: async (userId: string) => {
     set({ isLoading: true, error: null });
     try {
-      const transactions = await api.fetchTransactions();
+      const transactions = await TransactionService.getTransactions(userId);
       set({ transactions, isLoading: false });
-    } catch {
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
       set({ error: 'Erro ao carregar transações', isLoading: false });
     }
   },
 
-  addTransaction: async (transactionData: TransactionFormData) => {
-    set({ isLoading: true, error: null });
-    try {
-      const newTransaction = await api.addTransaction(transactionData);
-      set(state => ({
-        transactions: [newTransaction, ...state.transactions],
-        isLoading: false,
-      }));
-    } catch {
-      set({ error: 'Erro ao adicionar transação', isLoading: false });
-    }
+  addTransaction: (transactionData: TransactionData) => {
+    // Adiciona apenas ao store local (Firebase é tratado no hook)
+    set(state => ({
+      transactions: [transactionData, ...state.transactions],
+    }));
   },
 
-  deleteTransaction: async (id: number) => {
+  deleteTransaction: async (transactionId: string, userId: string) => {
     set({ isLoading: true, error: null });
     try {
-      await api.deleteTransaction(id);
+      await TransactionService.deleteTransaction(transactionId, userId);
       set(state => ({
-        transactions: state.transactions.filter(t => t.id !== id),
+        transactions: state.transactions.filter(t => t.id !== transactionId),
         isLoading: false,
       }));
-    } catch {
+    } catch (error) {
+      console.error('Error deleting transaction:', error);
       set({ error: 'Erro ao deletar transação', isLoading: false });
     }
   },
