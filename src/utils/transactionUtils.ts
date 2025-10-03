@@ -18,7 +18,7 @@ export const createTransactionFromForm = (
 
 export const createTransactionsFromCSV = (transactions: CSVTransaction[]): TransactionData[] => {
   return transactions.map(transaction => ({
-    type: transaction.type as 'income' | 'expense',
+    type: transaction.type === 'income' || transaction.type === 'Receita' ? 'income' : 'expense',
     value: transaction.value,
     category: transaction.category as 'Alimentação' | 'Moradia' | 'Saúde' | 'Estudo' | 'Transporte',
     date: transaction.date,

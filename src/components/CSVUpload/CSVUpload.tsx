@@ -1,5 +1,4 @@
 import * as DocumentPicker from 'expo-document-picker';
-import * as FileSystem from 'expo-file-system';
 import React, { useEffect, useRef, useState } from 'react';
 import {
     Animated,
@@ -50,28 +49,116 @@ export default function CSVUpload({ onTransactionsLoaded }: CSVUploadProps) {
   });
 
   const parseCSV = (csvText: string): CSVTransaction[] => {
-    const lines = csvText.split('\n');
-    const transactions: CSVTransaction[] = [];
-    const dataLines = lines.slice(1);
-    for (const rawLine of dataLines) {
-      const line = rawLine.replace(/\r$/, '');
-      if (line.trim() === '') continue;
-      const columns = line.split(',').map((col) => col.trim().replace(/"/g, ''));
-      if (columns.length >= 4) {
-        const [type, value, category, date] = columns;
-        const parsedValue = parseFloat(value);
-        if (isNaN(parsedValue)) {
-          throw new Error(`Valor inválido na linha: ${line}`);
+    try {
+      const lines = csvText.split('\n').filter(line => line.trim() !== '');
+      
+      if (lines.length < 2) {
+        throw new Error('Arquivo CSV deve ter pelo menos 2 linhas (cabeçalho + dados)');
+      }
+
+      // Verificar cabeçalho
+      const header = lines[0].toLowerCase().replace(/\s/g, '');
+      if (!header.includes('type') || !header.includes('value') || !header.includes('category') || !header.includes('date')) {
+        throw new Error('Cabeçalho inválido. Esperado: type,value,category,date');
+      }
+
+      const transactions: CSVTransaction[] = [];
+      const dataLines = lines.slice(1);
+      
+      for (let i = 0; i < dataLines.length; i++) {
+        const rawLine = dataLines[i];
+        const line = rawLine.replace(/\r$/, '').trim();
+        
+        if (line === '') continue;
+        
+        const columns = line.split(',').map((col) => col.trim().replace(/"/g, ''));
+        
+        if (columns.length < 4) {
+          throw new Error(`Linha ${i + 2}: Formato inválido. Esperado: type,value,category,date`);
         }
+        
+        const [type, value, category, date] = columns;
+        
+        // Validar tipo
+        const validTypes = ['income', 'expense', 'receita', 'despesa'];
+        if (!validTypes.includes(type.toLowerCase())) {
+          throw new Error(`Linha ${i + 2}: Tipo inválido "${type}". Use: income/expense ou receita/despesa`);
+        }
+        
+        // Validar valor
+        const parsedValue = parseFloat(value.replace(',', '.'));
+        if (isNaN(parsedValue) || parsedValue <= 0) {
+          throw new Error(`Linha ${i + 2}: Valor inválido "${value}". Use um número maior que 0`);
+        }
+        
+        // Validar categoria
+        const validCategories = ['Alimentação', 'Moradia', 'Saúde', 'Estudo', 'Transporte'];
+        if (!validCategories.includes(category)) {
+          throw new Error(`Linha ${i + 2}: Categoria inválida "${category}". Use: ${validCategories.join(', ')}`);
+        }
+        
+        // Validar data
+        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+        if (!dateRegex.test(date)) {
+          throw new Error(`Linha ${i + 2}: Data inválida "${date}". Use formato: YYYY-MM-DD`);
+        }
+        
         transactions.push({
-          type: type.toLowerCase() === 'receita' ? 'income' : 'expense',
+          type: type.toLowerCase() === 'receita' || type.toLowerCase() === 'income' ? 'income' : 'expense',
           value: parsedValue,
           category: category,
           date: date,
         });
       }
+      
+      if (transactions.length === 0) {
+        throw new Error('Nenhuma transação válida encontrada no arquivo');
+      }
+      
+      return transactions;
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : 'Erro ao processar CSV');
     }
-    return transactions;
+  };
+
+  const readFileContent = async (file: any): Promise<string> => {
+    if (Platform.OS === 'web') {
+      // Para web, usar FileReader com o objeto File nativo
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const content = e.target?.result as string;
+          resolve(content);
+        };
+        reader.onerror = () => reject(new Error('Erro ao ler arquivo'));
+        
+        // No web, o DocumentPicker retorna file.file que é o objeto File nativo
+        if (file.file) {
+          reader.readAsText(file.file);
+        } else {
+          reject(new Error('Arquivo inválido para leitura no navegador'));
+        }
+      });
+    } else {
+      // Para mobile, usar fetch como alternativa mais robusta
+      try {
+        // Primeira tentativa: usar fetch (mais confiável)
+        const response = await fetch(file.uri);
+        const text = await response.text();
+        return text;
+      } catch (fetchError) {
+        // Segunda tentativa: usar FileSystem com encoding string
+        try {
+          const FileSystem = require('expo-file-system');
+          const text = await FileSystem.readAsStringAsync(file.uri, {
+            encoding: 'utf8',
+          });
+          return text;
+        } catch (fileSystemError) {
+          throw new Error(`Erro ao ler arquivo: ${fileSystemError instanceof Error ? fileSystemError.message : 'Erro desconhecido'}`);
+        }
+      }
+    }
   };
 
   const handlePickFile = async () => {
@@ -80,7 +167,7 @@ export default function CSVUpload({ onTransactionsLoaded }: CSVUploadProps) {
     try {
       const result = await DocumentPicker.getDocumentAsync({
         type: ['text/csv', 'application/vnd.ms-excel', 'text/plain'],
-        copyToCacheDirectory: true,
+        copyToCacheDirectory: Platform.OS !== 'web',
         multiple: false,
       });
       if (result.canceled) {
@@ -98,9 +185,8 @@ export default function CSVUpload({ onTransactionsLoaded }: CSVUploadProps) {
         setError('Por favor, selecione apenas arquivos CSV.');
         return;
       }
-      const text = await FileSystem.readAsStringAsync(file.uri, {
-        encoding: FileSystem.EncodingType.UTF8,
-      });
+      
+      const text = await readFileContent(file);
       const transactions = parseCSV(text);
       if (transactions.length === 0) {
         setError('Nenhuma transação válida encontrada no arquivo CSV.');

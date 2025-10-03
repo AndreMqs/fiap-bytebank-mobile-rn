@@ -180,6 +180,8 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     marginTop: 16,
+    marginBottom: 20, // Espaço extra na parte inferior
+    paddingBottom: 10, // Padding adicional para garantir visibilidade
   },
   clearButton: {
     width: 150,
