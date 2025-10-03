@@ -12,6 +12,17 @@ export interface TransactionData {
   date: string;
 }
 
+export interface Transaction {
+  id: string;
+  type: 'income' | 'expense';
+  value: number;
+  category: 'Alimentação' | 'Moradia' | 'Saúde' | 'Estudo' | 'Transporte';
+  date: string;
+  userId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface TransactionFormData {
   type: string;
   category: string;

@@ -1,21 +1,30 @@
 import { ThemedText } from '@/components/themed-text';
+import OtherServices from '@/src/components/OtherServices/OtherServices';
+import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function OutrosServicosScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <View style={styles.header}>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        {/* Header */}
+        <LinearGradient
+          colors={['#667eea', '#764ba2']}
+          style={styles.header}
+        >
           <ThemedText style={styles.title}>Outros Serviços</ThemedText>
-        </View>
-        <View style={styles.content}>
           <ThemedText style={styles.subtitle}>
-            Acesse todos os serviços disponíveis do ByteBank
+            Acesse todos os serviços disponíveis
           </ThemedText>
+        </LinearGradient>
+
+        {/* OtherServices Component */}
+        <View style={styles.servicesContainer}>
+          <OtherServices />
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -23,33 +32,29 @@ export default function OutrosServicosScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#667eea',
+    backgroundColor: '#f5f5f5',
   },
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
   },
   header: {
-    backgroundColor: '#667eea',
-    paddingVertical: 20,
+    paddingTop: 20,
+    paddingBottom: 30,
     paddingHorizontal: 20,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
+    borderBottomLeftRadius: 25,
+    borderBottomRightRadius: 25,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     color: 'white',
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
+    marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
+    color: 'rgba(255, 255, 255, 0.8)',
+  },
+  servicesContainer: {
+    margin: 20,
   },
 });
