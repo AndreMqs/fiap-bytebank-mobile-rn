@@ -149,22 +149,30 @@ export default function Statement(props: StatementProps) {
 
 const styles = StyleSheet.create({
   statementContainer: {
-    width: 282,
-    height: 600,
+    width: '100%',
+    maxWidth: 400,
+    minHeight: 500,
     backgroundColor: '#F5F5F5',
     paddingVertical: 32,
     paddingHorizontal: 24,
-    borderRadius: 8,
+    borderRadius: 12,
     overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'flex-start',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   statementHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 24,
-    maxWidth: 240,
     width: '100%',
   },
   headerTitle: {
@@ -207,7 +215,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   statementsListContainer: {
-    maxWidth: 240,
     width: '100%',
     flex: 1,
     overflow: 'hidden',
