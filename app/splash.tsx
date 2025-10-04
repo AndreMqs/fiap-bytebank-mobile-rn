@@ -19,7 +19,7 @@ export default function SplashScreen() {
     >
       <View style={styles.content}>
         <Image
-          source={require('@/assets/images/icon.png')}
+          source={require('@/src/assets/images/icon.png')}
           style={styles.logo}
         />
         <Text style={styles.title}>ByteBank Mobile</Text>

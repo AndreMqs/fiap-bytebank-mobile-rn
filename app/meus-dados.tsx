@@ -1,19 +1,18 @@
 import { useAuth } from '@/src/contexts/AuthContext';
 import { UserDataService } from '@/src/services/userDataService';
-import { UserData } from '@/src/types/User';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 export default function MeusDadosScreen() {
@@ -21,19 +20,11 @@ export default function MeusDadosScreen() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
-  const [userData, setUserData] = useState<UserData | null>(null);
-
-  useEffect(() => {
-    if (user) {
-      loadUserData();
-    }
-  }, [user]);
 
   const loadUserData = async () => {
     if (user) {
       try {
         const userInfo = await UserDataService.getUserData(user.uid);
-        setUserData(userInfo);
         if (userInfo) {
           setName(userInfo.name);
           setEmail(userInfo.email);
@@ -43,6 +34,13 @@ export default function MeusDadosScreen() {
       }
     }
   };
+  
+  useEffect(() => {
+    if (user) {
+      loadUserData();
+    }
+  }, [user, loadUserData]);
+
 
   const handleSave = async () => {
     if (!name || !email) {

@@ -36,7 +36,7 @@ export default function MainPage() {
   useEffect(() => {
     fetchUser();
     fetchTransactions(user.uid);
-  }, [fetchUser, fetchTransactions]);
+  }, [fetchUser, fetchTransactions, user.id]);
 
   useEffect(() => {
     Animated.timing(fadeMain, { toValue: 1, duration: 220, useNativeDriver: true }).start(() => {
@@ -56,7 +56,7 @@ export default function MainPage() {
     } finally {
       setRefreshing(false);
     }
-  }, [fetchUser, fetchTransactions]);
+  }, [fetchUser, fetchTransactions, user.id]);
 
   const handleMenuClick = useCallback((title: string) => {
     setSelectedMenu(title);
