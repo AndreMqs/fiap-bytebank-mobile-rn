@@ -6,6 +6,7 @@ export interface CSVTransaction {
 }
 
 export interface TransactionData {
+  id: string;
   type: 'income' | 'expense';
   value: number;
   category: 'Alimentação' | 'Moradia' | 'Saúde' | 'Estudo' | 'Transporte';

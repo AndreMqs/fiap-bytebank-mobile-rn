@@ -1,5 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, RefreshControl, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import {
+  Animated,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 
 import { useStore } from '../../store/useStore';
 import CategoryChart from '../CategoryChart/CategoryChart';
@@ -84,26 +91,22 @@ export default function MainPage() {
       <Animated.View
         style={[
           styles.middleContentContainer,
-          isTablet || isMobile ? styles.middleContentContainerTablet : null,
           { opacity: fadeMiddle, transform: [{ translateY: translateMiddle }] },
         ]}
       >
-        <Summary username={user.name} money={user.balance} />
-        {mainContent}
+        <View style={styles.middleMax}>
+          <Summary username={user.name} money={user.balance} />
+          {mainContent}
+        </View>
       </Animated.View>
     );
-  }, [mainContent, user, fadeMiddle, translateMiddle, isTablet, isMobile]);
+  }, [mainContent, user, fadeMiddle, translateMiddle]);
 
   return (
     <Animated.View style={[styles.page, { opacity: fadeMain }]}>
       <Header items={menuItems} onMenuClick={handleMenuClick} />
 
-      <View
-        style={[
-          styles.body,
-          isTablet || isMobile ? styles.bodyTablet : null,
-        ]}
-      >
+      <View style={[styles.body, (isTablet || isMobile) && styles.bodyTablet]}>
         <View style={styles.menuContainer}>
           <Menu items={menuItems} onMenuClick={handleMenuClick} />
         </View>
@@ -112,9 +115,10 @@ export default function MainPage() {
           style={styles.scroll}
           contentContainerStyle={[
             styles.scrollContent,
-            isTablet || isMobile ? styles.scrollContentTablet : null,
+            (isTablet || isMobile) && styles.scrollContentTablet,
           ]}
           nestedScrollEnabled
+          removeClippedSubviews={false}    // impede que o Summary seja “recortado” no Android
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         >
           {renderMiddleContent()}
@@ -123,16 +127,20 @@ export default function MainPage() {
             style={[
               styles.statementContainer,
               { opacity: fadeStatement, transform: [{ translateY: translateStatement }] },
-              isTablet || isMobile ? styles.statementContainerTablet : null,
+              (isTablet || isMobile) && styles.statementContainerTablet,
             ]}
           >
-            <Statement transactions={transactions} deleteTransaction={deleteTransaction} />
+            <View style={styles.middleMax}>
+              <Statement transactions={transactions} deleteTransaction={deleteTransaction} />
+            </View>
           </Animated.View>
         </Animated.ScrollView>
       </View>
     </Animated.View>
   );
 }
+
+const CONTENT_MAX_WIDTH = 840;
 
 const styles = StyleSheet.create({
   page: {
@@ -147,35 +155,33 @@ const styles = StyleSheet.create({
   bodyTablet: {
     flexDirection: 'column',
   },
-  scroll: {
-    flex: 1,
-  },
+  scroll: { flex: 1 },
   scrollContent: {
     paddingBottom: 36,
     paddingHorizontal: 24,
     gap: 16,
   },
   scrollContentTablet: {
-    paddingHorizontal: 60,
+    paddingHorizontal: 16,
     paddingBottom: 70,
+    gap: 16,
   },
   menuContainer: {
     width: 180,
   },
   middleContentContainer: {
     width: '100%',
-    marginHorizontal: 24,
     flexDirection: 'column',
-    gap: 16,
   },
-  middleContentContainerTablet: {
+  middleMax: {
     width: '100%',
-    marginHorizontal: 0,
+    maxWidth: CONTENT_MAX_WIDTH,
+    alignSelf: 'center',
     gap: 16,
   },
   statementContainer: {
-    alignSelf: 'flex-start',
-    width: 282,
+    alignSelf: 'stretch',
+    width: '100%',
   },
   statementContainerTablet: {
     width: '100%',
