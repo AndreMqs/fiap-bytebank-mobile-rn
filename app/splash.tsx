@@ -1,16 +1,27 @@
+import { useAuth } from '@/src/contexts/AuthContext';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React, { useEffect } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
 export default function SplashScreen() {
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      router.replace('/login');
-    }, 3000);
+  const { user, loading } = useAuth();
 
-    return () => clearTimeout(timer);
-  }, []);
+  useEffect(() => {
+    if (!loading) {
+      const timer = setTimeout(() => {
+        if (user) {
+
+          router.replace('/(tabs)');
+        } else {
+
+          router.replace('/login');
+        }
+      }, 2000); 
+
+      return () => clearTimeout(timer);
+    }
+  }, [user, loading]);
 
   return (
     <LinearGradient
@@ -19,7 +30,7 @@ export default function SplashScreen() {
     >
       <View style={styles.content}>
         <Image
-          source={require('@/assets/images/icon.png')}
+          source={require('@/src/assets/images/icon.png')}
           style={styles.logo}
         />
         <Text style={styles.title}>ByteBank Mobile</Text>

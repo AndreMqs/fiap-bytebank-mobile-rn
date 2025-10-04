@@ -1,21 +1,29 @@
-import EmptyState from '@/src/components/Statement/EmptyState/EmptyState';
-import Statement from '@/src/components/Statement/Statement';
-import { ThemedText } from '@/src/components/themed-text';
-import { useUserTransactions } from '@/src/hooks/useUserTransactions';
-import { useStore } from '@/src/store/useStore';
 import { LinearGradient } from 'expo-linear-gradient';
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    StyleSheet,
-    View
+  ActivityIndicator,
+  Alert,
+  StyleSheet,
+  View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import EmptyState from '../../src/components/Statement/EmptyState/EmptyState';
+import Statement from '../../src/components/Statement/Statement';
+import { ThemedText } from '../../src/components/themed-text';
+import { useAuth } from '../../src/contexts/AuthContext';
+import { useUserTransactions } from '../../src/hooks/useUserTransactions';
+import { useStore } from '../../src/store/useStore';
 
 export default function ExtratoScreen() {
   const { transactions, userId, isLoading, error } = useUserTransactions();
-  const { deleteTransaction, updateTransaction } = useStore();
+  const { deleteTransaction, updateTransaction, fetchTransactions } = useStore();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user?.uid) {
+      fetchTransactions(user.uid);
+    }
+  }, [user?.uid, fetchTransactions]);
 
 
 
@@ -37,7 +45,7 @@ export default function ExtratoScreen() {
             try {
               await deleteTransaction(id, userId);
               Alert.alert('Sucesso', 'Transação excluída com sucesso!');
-            } catch (error) {
+            } catch (err) {
               Alert.alert('Erro', 'Não foi possível excluir a transação.');
             }
           },
@@ -50,7 +58,7 @@ export default function ExtratoScreen() {
     try {
       await updateTransaction(id, userId, transactionData);
       Alert.alert('Sucesso', 'Transação atualizada com sucesso!');
-    } catch (error) {
+    } catch (err) {
       Alert.alert('Erro', 'Não foi possível atualizar a transação.');
     }
   };

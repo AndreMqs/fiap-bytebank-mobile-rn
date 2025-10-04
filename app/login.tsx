@@ -1,4 +1,5 @@
 import { useAuth } from '@/src/contexts/AuthContext';
+import { useStore } from '@/src/store/useStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
@@ -19,6 +20,7 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
+  const { fetchUser, fetchTransactions } = useStore();
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -29,6 +31,15 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       await login(email, password);
+      setTimeout(async () => {
+        try {
+          await fetchUser();
+
+        } catch (error) {
+          console.error('Erro ao carregar dados iniciais:', error);
+        }
+      }, 500);
+      
       router.replace('/(tabs)');
     } catch (error: any) {
       let errorMessage = 'Erro ao fazer login';
