@@ -31,6 +31,7 @@ export default function Investments() {
   const { width } = useWindowDimensions();
   const isMobile = width <= 425;
   const isTablet = width <= 768;
+  const isNarrow = width <= 640;
 
   const chartWidth = isMobile ? 300 : 400;
   const chartHeight = isMobile ? 180 : 220;
@@ -55,16 +56,16 @@ export default function Investments() {
         <Background width="100%" height="100%" preserveAspectRatio="xMaxYMax meet" />
       </View>
 
-      <View style={styles.investmentsContent}>
+      <View style={styles.inner}>
         <Text style={styles.title}>Investimentos</Text>
         <Text style={styles.total}>Total: R$ {total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</Text>
 
-        <View style={styles.yields}>
-          <View style={styles.yieldBox}>
+        <View style={[styles.yields, isNarrow && styles.yieldsColumn]}>
+          <View style={[styles.yieldBox, isNarrow && styles.yieldBoxFull]}>
             <Text style={styles.yieldTitle}>Renda Fixa</Text>
             <Text style={styles.yieldValue}>R$ {rendaFixa.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</Text>
           </View>
-          <View style={styles.yieldBox}>
+          <View style={[styles.yieldBox, isNarrow && styles.yieldBoxFull]}>
             <Text style={styles.yieldTitle}>Renda variável</Text>
             <Text style={styles.yieldValue}>R$ {rendaVariavel.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</Text>
           </View>
@@ -80,13 +81,7 @@ export default function Investments() {
           ) : isMobile ? (
             <View style={styles.mobileChartAndLegend}>
               <Animated.View style={{ transform: [{ scale }], opacity: fade }}>
-                <Chart
-                  data={data}
-                  width={chartWidth}
-                  height={chartHeight}
-                  outerRadius={outerRadius}
-                  innerRadius={innerRadius}
-                />
+                <Chart data={data} width={chartWidth} height={chartHeight} outerRadius={outerRadius} innerRadius={innerRadius} />
               </Animated.View>
               <View style={styles.mobileLegendWrapper}>
                 {data.map((item: any) => (
@@ -100,13 +95,7 @@ export default function Investments() {
           ) : (
             <View style={styles.desktopChartWrapper}>
               <Animated.View style={{ transform: [{ scale }], opacity: fade }}>
-                <Chart
-                  data={data}
-                  width={chartWidth}
-                  height={chartHeight}
-                  outerRadius={outerRadius}
-                  innerRadius={innerRadius}
-                />
+                <Chart data={data} width={chartWidth} height={chartHeight} outerRadius={outerRadius} innerRadius={innerRadius} />
               </Animated.View>
               <View style={styles.desktopLegend}>
                 {data.map((item: any) => (
@@ -124,6 +113,8 @@ export default function Investments() {
   );
 }
 
+const CONTENT_MAX_WIDTH = 720;
+
 const styles = StyleSheet.create({
   investmentsContainer: {
     backgroundColor: '#CBCBCB',
@@ -131,9 +122,13 @@ const styles = StyleSheet.create({
     padding: 32,
     position: 'relative',
     width: '100%',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
     overflow: 'hidden',
+  },
+  inner: {
+    width: '100%',
+    maxWidth: CONTENT_MAX_WIDTH,
+    alignSelf: 'center',
+    gap: 24,
   },
   bgDecoration: {
     position: 'absolute',
@@ -141,12 +136,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: '100%',
     height: '100%',
-  },
-  investmentsContent: {
-    width: '100%',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    gap: 24,
   },
   title: {
     fontSize: 25,
@@ -160,23 +149,28 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     color: '#004D61',
     lineHeight: 30,
-    marginBottom: 24,
+    marginBottom: 8,
   },
   yields: {
     flexDirection: 'row',
-    gap: 24,
+    gap: 16,
     width: '100%',
-    marginBottom: 24,
+    marginBottom: 8,
+  },
+  yieldsColumn: {
+    flexDirection: 'column',
   },
   yieldBox: {
     backgroundColor: '#004D61',
     borderRadius: 8,
     paddingVertical: 16,
-    paddingHorizontal: 32,
-    minWidth: 175,
+    paddingHorizontal: 24,
     alignItems: 'center',
     gap: 4,
-    flexGrow: 1,
+    flex: 1,
+  },
+  yieldBoxFull: {
+    width: '100%',
   },
   yieldTitle: {
     fontSize: 16,
@@ -195,16 +189,15 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '400',
     color: '#000',
-    marginBottom: 16,
+    marginTop: 8,
   },
   chartContainer: {
     backgroundColor: '#004D61',
     borderRadius: 8,
     paddingVertical: 24,
-    paddingHorizontal: 32,
+    paddingHorizontal: 24,
     width: '100%',
     maxWidth: 600,
-    marginBottom: 16,
     alignSelf: 'center',
   },
   desktopChartWrapper: {
@@ -212,9 +205,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    gap: 16,
   },
   desktopLegend: {
-    marginLeft: 16,
     gap: 8,
   },
   desktopLegendItem: {
@@ -238,7 +231,7 @@ const styles = StyleSheet.create({
   },
   mobileLegendWrapper: {
     width: '100%',
-    marginTop: 16,
+    marginTop: 8,
     alignItems: 'center',
     gap: 8,
   },
