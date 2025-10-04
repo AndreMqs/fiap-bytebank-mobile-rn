@@ -2,78 +2,78 @@ import React, { useEffect, useRef } from 'react';
 import { Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import BackgroundDesktop from '../../images/BackgroundDesktop.svg';
-import CardImage from '../../images/Card.svg';
+import CardBlue from '../../images/CardBlue.svg';
+import CardGray from '../../images/CardGray.png';
 
-const cardsMock = [
-  { type: 'Crédito', image: CardImage, function: 'Crédito' },
-  { type: 'Débito', image: CardImage, function: 'Débito' },
+type CardItem =
+  | { type: 'Crédito'; function: 'Crédito'; kind: 'svg'; Svg: typeof CardBlue }
+  | { type: 'Débito'; function: 'Débito'; kind: 'png'; img: any };
+
+const cardsMock: CardItem[] = [
+  { type: 'Crédito', function: 'Crédito', kind: 'svg', Svg: CardBlue },
+  { type: 'Débito', function: 'Débito', kind: 'png', img: CardGray },
 ];
 
 export default function MyCards({ onBack }: { onBack: () => void }) {
   const fade = useRef(new Animated.Value(0)).current;
-  const scaleBack = useRef(new Animated.Value(1)).current;
-  const scaleConfig = useRef(new Animated.Value(1)).current;
-  const scaleBlock = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     Animated.timing(fade, { toValue: 1, duration: 220, useNativeDriver: true }).start();
   }, [fade]);
 
-  const pressIn = (v: Animated.Value) => Animated.spring(v, { toValue: 0.96, useNativeDriver: true }).start();
-  const pressOut = (v: Animated.Value) => Animated.spring(v, { toValue: 1, useNativeDriver: true }).start();
-
   return (
     <Animated.View style={[styles.myCardsContainer, { opacity: fade }]}>
-      <View style={styles.bgDecoration}>
+      <View pointerEvents="none" style={styles.bgDecoration}>
         <BackgroundDesktop width="100%" height="100%" preserveAspectRatio="xMaxYMin meet" />
       </View>
 
-      <View style={styles.title}>
-        <Animated.View style={{ transform: [{ scale: scaleBack }] }}>
-          <Pressable
-            onPress={onBack}
-            onPressIn={() => pressIn(scaleBack)}
-            onPressOut={() => pressOut(scaleBack)}
-            style={styles.backButton}
-          >
+      <View style={styles.content}>
+        <View style={styles.titleRow}>
+          <Pressable onPress={onBack} style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}>
             <Text style={styles.backButtonText}>←</Text>
           </Pressable>
-        </Animated.View>
-        <Text style={styles.titleText}>Meus cartões</Text>
-      </View>
+          <Text style={styles.titleText}>Meus cartões</Text>
+        </View>
 
-      {cardsMock.map((card, i) => (
-        <View style={styles.section} key={i}>
-          <Text style={styles.sectionTitle}>{`Cartão ${card.type}`}</Text>
-          <View style={styles.cardRow}>
-            <Image source={card.image} style={styles.cardImage} resizeMode="contain" />
-            <View style={styles.cardActions}>
-              <Animated.View style={{ transform: [{ scale: scaleConfig }] }}>
+        <View style={styles.list}>
+          {cardsMock.map((card, i) => (
+            <View style={styles.section} key={i}>
+              <Text style={styles.sectionTitle}>{`Cartão ${card.type}`}</Text>
+
+              <View style={styles.cardImageWrapper}>
+                {card.kind === 'svg' ? (
+                  <card.Svg width="100%" height="100%" preserveAspectRatio="xMidYMid meet" />
+                ) : (
+                  <Image source={card.img} style={styles.cardImageRaster} resizeMode="contain" />
+                )}
+              </View>
+
+              <View style={styles.cardActions}>
                 <Pressable
-                  onPressIn={() => pressIn(scaleConfig)}
-                  onPressOut={() => pressOut(scaleConfig)}
-                  style={styles.configButton}
+                  onPress={() => {}}
+                  style={({ pressed }) => [styles.configButton, pressed && styles.buttonPressed]}
                 >
                   <Text style={styles.configButtonText}>Configurar</Text>
                 </Pressable>
-              </Animated.View>
-              <Animated.View style={{ transform: [{ scale: scaleBlock }] }}>
+
                 <Pressable
-                  onPressIn={() => pressIn(scaleBlock)}
-                  onPressOut={() => pressOut(scaleBlock)}
-                  style={styles.blockButton}
+                  onPress={() => {}}
+                  style={({ pressed }) => [styles.blockButton, pressed && styles.buttonPressed]}
                 >
                   <Text style={styles.blockButtonText}>Bloquear</Text>
                 </Pressable>
-              </Animated.View>
-              <Text style={styles.cardFunction}>{`Função: ${card.function}`}</Text>
+
+                <Text style={styles.cardFunction}>{`Função: ${card.function}`}</Text>
+              </View>
             </View>
-          </View>
+          ))}
         </View>
-      ))}
+      </View>
     </Animated.View>
   );
 }
+
+const MAX_CONTENT_WIDTH = 720;
 
 const styles = StyleSheet.create({
   myCardsContainer: {
@@ -82,23 +82,36 @@ const styles = StyleSheet.create({
     padding: 32,
     marginBottom: 24,
     width: '100%',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
+    position: 'relative',
     overflow: 'hidden',
   },
   bgDecoration: {
     position: 'absolute',
+    zIndex: 0,
     top: 0,
     right: 0,
+    left: 0,
+    bottom: 0,
     width: '100%',
     height: '100%',
   },
-  title: {
+  content: {
+    zIndex: 1,
+    width: '100%',
+    alignItems: 'center',
+  },
+  list: {
+    width: '100%',
+    maxWidth: MAX_CONTENT_WIDTH,
+    gap: 24,
+  },
+  titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
     justifyContent: 'center',
     width: '100%',
+    maxWidth: MAX_CONTENT_WIDTH,
     marginBottom: 24,
   },
   titleText: {
@@ -110,6 +123,10 @@ const styles = StyleSheet.create({
   backButton: {
     paddingHorizontal: 8,
     paddingVertical: 4,
+    borderRadius: 8,
+  },
+  backButtonPressed: {
+    opacity: 0.7,
   },
   backButtonText: {
     fontSize: 24,
@@ -117,7 +134,7 @@ const styles = StyleSheet.create({
   },
   section: {
     width: '100%',
-    marginBottom: 32,
+    alignItems: 'center',
   },
   sectionTitle: {
     fontSize: 20,
@@ -127,22 +144,23 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     width: '100%',
   },
-  cardRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 32,
-    width: '100%',
-  },
-  cardImage: {
+  cardImageWrapper: {
     width: 320,
-    height: 160,
+    height: 170,
     borderRadius: 12,
+    overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  cardImageRaster: {
+    width: '100%',
+    height: '100%',
   },
   cardActions: {
     flexDirection: 'column',
-    alignItems: 'flex-start',
-    gap: 16,
-    marginTop: 8,
+    alignItems: 'center',
+    gap: 12,
   },
   configButton: {
     width: 250,
@@ -151,7 +169,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FF5031',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 8,
   },
   configButtonText: {
     color: '#fff',
@@ -167,17 +184,21 @@ const styles = StyleSheet.create({
     borderColor: '#BF1313',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 8,
   },
   blockButtonText: {
     color: '#BF1313',
     fontSize: 18,
     fontWeight: '700',
   },
+  buttonPressed: {
+    transform: [{ scale: 0.98 }],
+    opacity: 0.9,
+  },
   cardFunction: {
     fontSize: 16,
     fontWeight: '400',
     color: '#2F2E41',
     marginTop: 8,
+    textAlign: 'center',
   },
 });
