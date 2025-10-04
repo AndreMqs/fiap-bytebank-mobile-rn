@@ -96,10 +96,12 @@ export const useStore = create<StoreState>((set, get) => ({
     const { transactions } = get();
     const categoryMap = new Map<string, number>();
     
-    transactions.forEach(transaction => {
-      const current = categoryMap.get(transaction.category) || 0;
-      categoryMap.set(transaction.category, current + transaction.value);
-    });
+    transactions
+      .filter(transaction => transaction.type === 'expense')
+      .forEach(transaction => {
+        const current = categoryMap.get(transaction.category) || 0;
+        categoryMap.set(transaction.category, current + transaction.value);
+      });
 
     const colors = ['#2196F3', '#9C27B0', '#E91E63', '#FF9800', '#4CAF50'];
     
