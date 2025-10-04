@@ -1,6 +1,6 @@
-import { ThemedText } from '@/components/themed-text';
 import EmptyState from '@/src/components/Statement/EmptyState/EmptyState';
 import Statement from '@/src/components/Statement/Statement';
+import { ThemedText } from '@/src/components/themed-text';
 import { useUserTransactions } from '@/src/hooks/useUserTransactions';
 import { useStore } from '@/src/store/useStore';
 import { LinearGradient } from 'expo-linear-gradient';

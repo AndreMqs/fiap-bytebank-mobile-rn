@@ -3,7 +3,7 @@ import { router, Stack } from 'expo-router';
 import React from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ThemedText } from '../components/themed-text';
+import { ThemedText } from '../src/components/themed-text';
 import { useAuth } from '../src/contexts/AuthContext';
 
 export default function PerfilScreen() {

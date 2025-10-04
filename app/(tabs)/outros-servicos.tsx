@@ -1,5 +1,5 @@
-import { ThemedText } from '@/components/themed-text';
 import OtherServices from '@/src/components/OtherServices/OtherServices';
+import { ThemedText } from '@/src/components/themed-text';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
