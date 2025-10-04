@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useRef } from 'react';
-import { Animated, StyleSheet, Text, TextInput, View } from 'react-native';
+import React, { useMemo } from 'react';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { ManualTransactionFormProps } from '../../types/components';
 import { TRANSACTION_CATEGORIES, TRANSACTION_TYPES } from '../../utils/constants';
 import { parseMoneyValue } from '../../utils/stringUtils';
@@ -13,12 +13,6 @@ export const ManualTransactionForm = ({
   onValueChange,
   onFocusChange,
 }: ManualTransactionFormProps) => {
-  const fade = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    Animated.timing(fade, { toValue: 1, duration: 220, useNativeDriver: true }).start();
-  }, [fade]);
-
   const inputValue = useMemo(() => {
     if (isFocused) return formData.value;
     const value = parseFloat(formData.value.replace(',', '.'));
@@ -27,28 +21,29 @@ export const ManualTransactionForm = ({
   }, [formData.value, isFocused]);
 
   return (
-    <Animated.View style={[styles.form, { opacity: fade }]}>
-      {/* Tipo */}
+    <View style={styles.form}>
       <View style={styles.fieldContainer}>
-        <Select
-          value={formData.type}
-          placeholder="Selecione o tipo de transação"
-          options={TRANSACTION_TYPES}
-          onChange={(value) => onFieldChange('type', value)}
-        />
+        <View style={styles.controlBox}>
+          <Select
+            value={formData.type}
+            placeholder="Selecione o tipo de transação"
+            options={TRANSACTION_TYPES}
+            onChange={(value) => onFieldChange('type', value)}
+          />
+        </View>
       </View>
 
-      {/* Categoria */}
       <View style={styles.fieldContainer}>
-        <Select
-          value={formData.category}
-          placeholder="Selecione a categoria"
-          options={TRANSACTION_CATEGORIES}
-          onChange={(value) => onFieldChange('category', value)}
-        />
+        <View style={styles.controlBox}>
+          <Select
+            value={formData.category}
+            placeholder="Selecione a categoria"
+            options={TRANSACTION_CATEGORIES}
+            onChange={(value) => onFieldChange('category', value)}
+          />
+        </View>
       </View>
 
-      {/* Data */}
       <View style={styles.fieldContainer}>
         <Text style={styles.inputLabel}>Data</Text>
         <TextInput
@@ -61,7 +56,6 @@ export const ManualTransactionForm = ({
         />
       </View>
 
-      {/* Valor */}
       <View style={styles.fieldContainer}>
         <Text style={styles.inputLabel}>Valor</Text>
         <TextInput
@@ -74,29 +68,35 @@ export const ManualTransactionForm = ({
         />
         {!!valueError && <Text style={styles.errorText}>{valueError}</Text>}
       </View>
-    </Animated.View>
+    </View>
   );
 };
 
-const FIELD_MAX_WIDTH = 360; // ajuste se quiser mais largo/estreito
+const FIELD_MAX_WIDTH = 360;
 
 const styles = StyleSheet.create({
-  // Contêiner do formulário centralizado
   form: {
     width: '100%',
-    alignItems: 'center', // centraliza horizontalmente os filhos
+    alignItems: 'stretch',
     gap: 16,
+    minWidth: 0,
   },
-
-  // Cada “linha” (Select/Input) ocupa toda a largura disponível do miolo,
-  // mas limita pelo maxWidth para manter a estética
   fieldContainer: {
     width: '100%',
     maxWidth: FIELD_MAX_WIDTH,
     alignSelf: 'center',
-    justifyContent: 'center',
+    alignItems: 'stretch',
+    minWidth: 0,
   },
-
+  controlBox: {
+    width: '100%',
+    minHeight: 48,
+    maxHeight: 56,
+    justifyContent: 'center',
+    alignSelf: 'stretch',
+    overflow: 'hidden',
+    position: 'relative',
+  },
   inputLabel: {
     fontSize: 16,
     fontWeight: '600',
@@ -105,7 +105,6 @@ const styles = StyleSheet.create({
     color: '#DEE9EA',
     marginBottom: 12,
   },
-
   inputValue: {
     borderWidth: 1,
     borderColor: '#004D61',
@@ -119,16 +118,15 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingHorizontal: 12,
   },
-
   inputError: {
     borderColor: '#f44336',
     backgroundColor: '#ffebee',
   },
-
   errorText: {
     color: '#f44336',
     fontSize: 12,
     marginTop: 4,
     fontWeight: '500',
+    textAlign: 'left',
   },
 });
