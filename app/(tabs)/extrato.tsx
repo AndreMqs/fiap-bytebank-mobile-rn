@@ -6,12 +6,12 @@ import { useStore } from '@/src/store/useStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    RefreshControl,
-    ScrollView,
-    StyleSheet,
-    View
+  ActivityIndicator,
+  Alert,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 

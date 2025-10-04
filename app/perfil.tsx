@@ -56,7 +56,7 @@ export default function PerfilScreen() {
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         {/* Header */}
         <LinearGradient
-          colors={['#667eea', '#764ba2']}
+          colors={['#004D61', '#E4EDE3']}
           style={styles.header}
         >
           <TouchableOpacity
