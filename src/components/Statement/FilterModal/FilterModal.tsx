@@ -79,7 +79,14 @@ export default function FilterModal({ open, onClose, onApplyFilters, currentFilt
             </View>
           </View>
 
-          <ScrollView style={styles.modalContent} contentContainerStyle={{ paddingBottom: 16 }}>
+          <ScrollView 
+            style={styles.modalContent} 
+            contentContainerStyle={{ paddingBottom: 16 }}
+            showsVerticalScrollIndicator={true}
+            nestedScrollEnabled={true}
+            keyboardShouldPersistTaps="handled"
+            bounces={true}
+          >
             <View style={[styles.filterGrid, isNarrow && styles.filterGridNarrow]}>
               <View style={styles.filterField}>
                 <Text style={styles.label}>Categoria</Text>
@@ -140,7 +147,7 @@ export default function FilterModal({ open, onClose, onApplyFilters, currentFilt
                 />
               </View>
 
-              <View style={styles.filterField}>
+              <View style={[styles.filterField, styles.lastField]}>
                 <Text style={styles.label}>Valor Máximo</Text>
                 <TextInput
                   value={filters.valueMax}
@@ -185,12 +192,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 12,
     maxHeight: '90%',
+    minHeight: '50%',
     overflow: 'hidden',
     shadowColor: '#000',
     shadowOpacity: 0.15,
     shadowRadius: 20,
     shadowOffset: { width: 0, height: 4 },
     elevation: 8,
+    flexDirection: 'column',
   },
   modalTitle: {
     flexDirection: 'row',
@@ -242,6 +251,8 @@ const styles = StyleSheet.create({
   modalContent: {
     paddingHorizontal: 24,
     paddingTop: 32,
+    flexGrow: 1,
+    maxHeight: '100%',
   },
   filterGrid: {
     flexDirection: 'row',
@@ -256,6 +267,9 @@ const styles = StyleSheet.create({
     flexBasis: '48%',
     maxWidth: '48%',
     gap: 8,
+  },
+  lastField: {
+    marginBottom: 20,
   },
   label: {
     fontSize: 14,
