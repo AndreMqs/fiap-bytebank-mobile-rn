@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { TransactionService } from '../services/transactionService';
 import { StoreState } from '../types/store';
-import { TransactionData } from '../types/transaction';
+import { TransactionData, TransactionFormData } from '../types/transaction';
 
 export const useStore = create<StoreState>((set, get) => ({
   user: null,
@@ -10,7 +10,6 @@ export const useStore = create<StoreState>((set, get) => ({
   error: null,
 
   fetchUser: async () => {
-    // Esta função será implementada se necessário
     console.log('fetchUser not implemented yet');
   },
 
@@ -26,10 +25,43 @@ export const useStore = create<StoreState>((set, get) => ({
   },
 
   addTransaction: (transactionData: TransactionData) => {
-    // Adiciona apenas ao store local (Firebase é tratado no hook)
     set(state => ({
       transactions: [transactionData, ...state.transactions],
     }));
+  },
+
+  updateTransaction: async (transactionId: string, userId: string, transactionData: Partial<TransactionData>) => {
+    set({ isLoading: true, error: null });
+    try {
+      const firebaseData: Partial<TransactionFormData> = {};
+      
+      if (transactionData.type !== undefined) {
+        firebaseData.type = transactionData.type;
+      }
+      if (transactionData.category !== undefined) {
+        firebaseData.category = transactionData.category;
+      }
+      if (transactionData.value !== undefined) {
+        firebaseData.value = transactionData.value.toString();
+      }
+      if (transactionData.date !== undefined) {
+        firebaseData.date = transactionData.date;
+      }
+      
+      await TransactionService.updateTransaction(transactionId, userId, firebaseData);
+      
+      set(state => ({
+        transactions: state.transactions.map(t => 
+          t.id === transactionId 
+            ? { ...t, ...transactionData, updatedAt: new Date() }
+            : t
+        ),
+        isLoading: false,
+      }));
+    } catch (error) {
+      console.error('Error updating transaction:', error);
+      set({ error: 'Erro ao atualizar transação', isLoading: false });
+    }
   },
 
   deleteTransaction: async (transactionId: string, userId: string) => {

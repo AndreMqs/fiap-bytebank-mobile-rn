@@ -9,6 +9,7 @@ export interface StoreState {
   fetchUser: () => Promise<void>;
   fetchTransactions: (userId: string) => Promise<void>;
   addTransaction: (transaction: TransactionData) => void;
+  updateTransaction: (transactionId: string, userId: string, transactionData: Partial<TransactionData>) => Promise<void>;
   deleteTransaction: (transactionId: string, userId: string) => Promise<void>;
   
   getTotalIncome: () => number;

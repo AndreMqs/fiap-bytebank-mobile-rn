@@ -5,7 +5,7 @@ import { SingleStatementProps } from '../../../types/statement';
 import { parseMoneyValue } from '../../../utils/stringUtils';
 
 export default function SingleStatement(props: SingleStatementProps) {
-  const { transaction, isEditing, deleteTransaction } = props;
+  const { transaction, isEditing, deleteTransaction, updateTransaction, userId } = props;
   const { type, date, value, category } = transaction;
   const [inputValue, setInputValue] = useState<string>(value.toString());
   const [isFocused, setIsFocused] = useState(false);
@@ -16,6 +16,17 @@ export default function SingleStatement(props: SingleStatementProps) {
 
   const handleDelete = () => {
     deleteTransaction(transaction.id);
+  };
+
+  const handleSaveEdit = async () => {
+    if (updateTransaction && userId) {
+      const numericValue = parseFloat(inputValue.replace(',', '.'));
+      
+      if (!isNaN(numericValue) && numericValue !== value) {
+        const transactionData = { value: numericValue };
+        await updateTransaction(transaction.id, userId, transactionData);
+      }
+    }
   };
 
   const getInputValue = () => {
@@ -59,9 +70,14 @@ export default function SingleStatement(props: SingleStatementProps) {
           value={getInputValue()}
           onChangeText={setInputValue}
           editable={isEditing}
-          onBlur={() => setIsFocused(false)}
+          onBlur={() => {
+            setIsFocused(false);
+            if (isEditing) {
+              handleSaveEdit();
+            }
+          }}
           onFocus={() => setIsFocused(true)}
-          keyboardType="default"
+          keyboardType="decimal-pad"
         />
       </View>
 

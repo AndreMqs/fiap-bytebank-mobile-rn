@@ -11,7 +11,7 @@ import FilterModal from './FilterModal/FilterModal';
 import StatementList from './StatementList/StatementList';
 
 export default function Statement(props: StatementProps) {
-  const { transactions, deleteTransaction } = props;
+  const { transactions, deleteTransaction, updateTransaction, userId } = props;
 
   const [isEditing, setIsEditing] = useState(false);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
@@ -94,35 +94,52 @@ export default function Statement(props: StatementProps) {
   return (
     <Animated.View style={[styles.statementContainer, { opacity: fade }]}>
       <View style={styles.statementHeader}>
-        <Text style={styles.headerTitle}>Extrato</Text>
-        <View style={styles.headerButtonsContainer}>
-          <Animated.View style={{ transform: [{ scale: scaleEdit }] }}>
-            <Pressable
-              onPress={() => setIsEditing(!isEditing)}
-              onPressIn={() => pressIn(scaleEdit)}
-              onPressOut={() => pressOut(scaleEdit)}
-              style={styles.headerButton}
-            >
-              <Edit width={22} height={22} />
-            </Pressable>
-          </Animated.View>
-
-          <View style={styles.badgeWrapper}>
-            {activeFiltersCount > 0 && (
-              <Animated.View style={[styles.badge, { transform: [{ scale: badgeScale }] }]}>
-                <Text style={styles.badgeText}>{activeFiltersCount}</Text>
-              </Animated.View>
-            )}
-            <Animated.View style={{ transform: [{ scale: scaleFilter }] }}>
+        <View style={styles.titleContainer}>
+          <Text style={styles.headerTitle}>Extrato</Text>
+          {isEditing && (
+            <View style={styles.editingIndicator}>
+              <Text style={styles.editingText}>Modo Edição</Text>
+            </View>
+          )}
+          
+          <View style={styles.headerButtonsContainer}>
+            <Animated.View style={{ transform: [{ scale: scaleEdit }] }}>
               <Pressable
-                onPress={handleOpenFilterModal}
-                onPressIn={() => pressIn(scaleFilter)}
-                onPressOut={() => pressOut(scaleFilter)}
-                style={styles.headerButton}
+                onPress={() => setIsEditing(!isEditing)}
+                onPressIn={() => pressIn(scaleEdit)}
+                onPressOut={() => pressOut(scaleEdit)}
+                style={[styles.headerButton, isEditing && styles.headerButtonActive]}
               >
-                <Filter width={22} height={22} />
+                <Edit width={20} height={20} />
               </Pressable>
             </Animated.View>
+            
+            {isEditing && (
+              <Pressable
+                onPress={() => setIsEditing(false)}
+                style={styles.finishButton}
+              >
+                <Text style={styles.finishButtonText}>Concluir</Text>
+              </Pressable>
+            )}
+
+            <View style={styles.badgeWrapper}>
+              {activeFiltersCount > 0 && (
+                <Animated.View style={[styles.badge, { transform: [{ scale: badgeScale }] }]}>
+                  <Text style={styles.badgeText}>{activeFiltersCount}</Text>
+                </Animated.View>
+              )}
+              <Animated.View style={{ transform: [{ scale: scaleFilter }] }}>
+                <Pressable
+                  onPress={handleOpenFilterModal}
+                  onPressIn={() => pressIn(scaleFilter)}
+                  onPressOut={() => pressOut(scaleFilter)}
+                  style={styles.headerButton}
+                >
+                  <Filter width={20} height={20} />
+                </Pressable>
+              </Animated.View>
+            </View>
           </View>
         </View>
       </View>
@@ -142,6 +159,8 @@ export default function Statement(props: StatementProps) {
             statementsByMonth={getStatementByMonth(displayedTransactions)}
             isEditing={isEditing}
             deleteTransaction={deleteTransaction}
+            updateTransaction={updateTransaction}
+            userId={userId}
             onLoadMore={handleLoadMore}
             hasMore={hasMore}
             isLoading={isLoading}
@@ -162,7 +181,7 @@ export default function Statement(props: StatementProps) {
 const styles = StyleSheet.create({
   statementContainer: {
     width: '100%',
-    maxWidth: 400,
+    maxWidth: 450,
     minHeight: 500,
     backgroundColor: '#F5F5F5',
     paddingVertical: 32,
@@ -187,24 +206,56 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     width: '100%',
   },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    flex: 1,
+  },
   headerTitle: {
     fontSize: 25,
     color: '#000000',
     fontWeight: '700',
     lineHeight: 30.26,
   },
+  editingIndicator: {
+    backgroundColor: '#47A138',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 8,
+  },
+  editingText: {
+    color: 'white',
+    fontSize: 10,
+    fontWeight: '600',
+  },
   headerButtonsContainer: {
     flexDirection: 'row',
-    gap: 16,
-    marginLeft: 16,
+    gap: 4,
+    alignItems: 'center',
+    flexShrink: 0,
   },
   headerButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     backgroundColor: '#004D61',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  headerButtonActive: {
+    backgroundColor: '#47A138',
+  },
+  finishButton: {
+    backgroundColor: '#47A138',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  finishButtonText: {
+    color: 'white',
+    fontSize: 10,
+    fontWeight: '600',
   },
   badgeWrapper: {
     position: 'relative',

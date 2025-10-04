@@ -17,7 +17,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ExtratoScreen() {
   const { transactions, userId, isLoading, error } = useUserTransactions();
-  const { deleteTransaction, fetchTransactions } = useStore();
+  const { deleteTransaction, updateTransaction, fetchTransactions } = useStore();
 
   const handleRefresh = async () => {
     if (userId) {
@@ -52,6 +52,15 @@ export default function ExtratoScreen() {
     );
   };
 
+  const handleUpdateTransaction = async (id: string, userId: string, transactionData: any) => {
+    try {
+      await updateTransaction(id, userId, transactionData);
+      Alert.alert('Sucesso', 'Transação atualizada com sucesso!');
+    } catch (error) {
+      Alert.alert('Erro', 'Não foi possível atualizar a transação.');
+    }
+  };
+
   const renderContent = () => {
     if (isLoading && transactions.length === 0) {
       return (
@@ -84,7 +93,9 @@ export default function ExtratoScreen() {
     return (
       <Statement 
         transactions={transactions} 
-        deleteTransaction={handleDeleteTransaction} 
+        deleteTransaction={handleDeleteTransaction}
+        updateTransaction={handleUpdateTransaction}
+        userId={userId}
       />
     );
   };

@@ -1,4 +1,4 @@
-import { addDoc, collection, deleteDoc, doc, getDocs, orderBy, query, where } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, getDocs, orderBy, query, updateDoc, where } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { Transaction, TransactionFormData } from '../types/transaction';
 
@@ -6,7 +6,6 @@ export class TransactionService {
   private static readonly USERS_COLLECTION = 'users';
   private static readonly TRANSACTIONS_SUBCOLLECTION = 'transactions';
 
-  // Adicionar uma nova transação
   static async addTransaction(transactionData: TransactionFormData, userId: string): Promise<Transaction> {
     try {
       const transactionWithTimestamps = {
@@ -15,7 +14,6 @@ export class TransactionService {
         updatedAt: new Date(),
       };
 
-      // Usar subcoleção: users/{userId}/transactions/{transactionId}
       const userTransactionsRef = collection(db, this.USERS_COLLECTION, userId, this.TRANSACTIONS_SUBCOLLECTION);
       const docRef = await addDoc(userTransactionsRef, transactionWithTimestamps);
       
@@ -69,11 +67,23 @@ export class TransactionService {
       throw new Error('Falha ao carregar transações');
     }
   }
+  static async updateTransaction(transactionId: string, userId: string, transactionData: Partial<TransactionFormData>): Promise<void> {
+    try {
+      const transactionRef = doc(db, this.USERS_COLLECTION, userId, this.TRANSACTIONS_SUBCOLLECTION, transactionId);
+      const updateData = {
+        ...transactionData,
+        updatedAt: new Date(),
+      };
+      await updateDoc(transactionRef, updateData);
+    } catch (error) {
+      console.error('Erro ao atualizar transação:', error);
+      throw new Error('Falha ao atualizar transação');
+    }
+  }
 
-  // Deletar transação
   static async deleteTransaction(transactionId: string, userId: string): Promise<void> {
     try {
-      // Usar subcoleção: users/{userId}/transactions/{transactionId}
+    
       const transactionRef = doc(db, this.USERS_COLLECTION, userId, this.TRANSACTIONS_SUBCOLLECTION, transactionId);
       await deleteDoc(transactionRef);
     } catch (error) {
@@ -82,10 +92,9 @@ export class TransactionService {
     }
   }
 
-  // Buscar transações por categoria
   static async getTransactionsByCategory(userId: string, category: string): Promise<Transaction[]> {
     try {
-      // Usar subcoleção: users/{userId}/transactions
+
       const userTransactionsRef = collection(db, this.USERS_COLLECTION, userId, this.TRANSACTIONS_SUBCOLLECTION);
       const q = query(
         userTransactionsRef,
@@ -117,14 +126,13 @@ export class TransactionService {
     }
   }
 
-  // Buscar transações por período
   static async getTransactionsByDateRange(
     userId: string, 
     startDate: string, 
     endDate: string
   ): Promise<Transaction[]> {
     try {
-      // Usar subcoleção: users/{userId}/transactions
+
       const userTransactionsRef = collection(db, this.USERS_COLLECTION, userId, this.TRANSACTIONS_SUBCOLLECTION);
       const q = query(
         userTransactionsRef,

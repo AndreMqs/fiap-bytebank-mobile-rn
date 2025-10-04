@@ -4,7 +4,7 @@ import { StatementListProps } from '../../../types/statement';
 import SingleStatement from '../SingleStatement/SingleStatement';
 
 export default function StatementList(props: StatementListProps) {
-  const { statementsByMonth, isEditing, deleteTransaction, onLoadMore, hasMore = false, isLoading = false } = props;
+  const { statementsByMonth, isEditing, deleteTransaction, updateTransaction, userId, onLoadMore, hasMore = false, isLoading = false } = props;
 
   const fade = useRef(new Animated.Value(0)).current;
   const spinnerScale = useRef(new Animated.Value(1)).current;
@@ -53,6 +53,8 @@ export default function StatementList(props: StatementListProps) {
                   transaction={statement}
                   isEditing={isEditing}
                   deleteTransaction={deleteTransaction}
+                  updateTransaction={updateTransaction}
+                  userId={userId}
                   key={`${month}-${statement.id}-${index}`}
                 />
               ))}

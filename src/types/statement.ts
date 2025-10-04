@@ -1,4 +1,3 @@
-import { Transaction } from './api';
 
 export interface Statement {
   type: string;
@@ -16,20 +15,26 @@ export interface FilterCriteria {
 }
 
 export interface StatementProps {
-  transactions: Transaction[];
-  deleteTransaction: (id: number) => Promise<void>;
+  transactions: TransactionData[];
+  deleteTransaction: (id: string) => Promise<void>;
+  updateTransaction?: (id: string, userId: string, transactionData: Partial<TransactionData>) => Promise<void>;
+  userId?: string;
 }
 
 export interface SingleStatementProps {
-  transaction: Transaction;
+  transaction: TransactionData;
   isEditing: boolean;
-  deleteTransaction: (id: number) => Promise<void>;
+  deleteTransaction: (id: string) => Promise<void>;
+  updateTransaction?: (id: string, userId: string, transactionData: Partial<TransactionData>) => Promise<void>;
+  userId?: string;
 }
 
 export interface StatementListProps {
-  statementsByMonth: Map<string, Transaction[]>;
+  statementsByMonth: Map<string, TransactionData[]>;
   isEditing: boolean;
-  deleteTransaction: (id: number) => Promise<void>;
+  deleteTransaction: (id: string) => Promise<void>;
+  updateTransaction?: (id: string, userId: string, transactionData: Partial<TransactionData>) => Promise<void>;
+  userId?: string;
   onLoadMore?: () => void;
   hasMore?: boolean;
   isLoading?: boolean;
