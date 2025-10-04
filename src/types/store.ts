@@ -15,4 +15,5 @@ export interface StoreState {
   getTotalIncome: () => number;
   getTotalExpense: () => number;
   getCategoryData: () => Array<{ name: string; value: number; color: string }>;
+  getBalance: () => number;
 } 

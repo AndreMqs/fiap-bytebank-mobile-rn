@@ -35,7 +35,7 @@ export default function MainPage() {
 
   useEffect(() => {
     fetchUser();
-    fetchTransactions();
+    fetchTransactions(user.uid);
   }, [fetchUser, fetchTransactions]);
 
   useEffect(() => {
@@ -52,7 +52,7 @@ export default function MainPage() {
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
-      await Promise.all([fetchUser(), fetchTransactions()]);
+      await Promise.all([fetchUser(), fetchTransactions(user.uid)]);
     } finally {
       setRefreshing(false);
     }
@@ -95,7 +95,7 @@ export default function MainPage() {
         ]}
       >
         <View style={styles.middleMax}>
-          <Summary username={user.name} money={user.balance} />
+          <Summary />
           {mainContent}
         </View>
       </Animated.View>

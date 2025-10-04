@@ -1,3 +1,4 @@
+import { useStore } from '@/src/store/useStore';
 import React, { useMemo, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import Eye from '../../images/Eye.svg';
@@ -5,16 +6,16 @@ import { parseDateString } from '../../utils/dateUtils';
 import { parseMoneyValue } from '../../utils/stringUtils';
 
 interface SummaryProps {
-  username: string;
-  money: number;
 }
 
-export default function Summary({ username, money }: SummaryProps) {
+export default function Summary(props: SummaryProps) {
+  const { getBalance } = useStore();
   const { width } = useWindowDimensions();
   const isMobile = width <= 480;
-
   const [isBalanceVisible, setIsBalanceVisible] = useState(true);
   const dateText = useMemo(() => parseDateString(new Date()), []);
+  
+  const money = getBalance();
 
   const moneyText = isBalanceVisible ? parseMoneyValue(money) : '••••••';
 
