@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef } from 'react';
-import { Animated, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import { Animated, StyleSheet, Text, TextInput, View } from 'react-native';
 import { ManualTransactionFormProps } from '../../types/components';
 import { TRANSACTION_CATEGORIES, TRANSACTION_TYPES } from '../../utils/constants';
 import { parseMoneyValue } from '../../utils/stringUtils';
@@ -13,10 +13,8 @@ export const ManualTransactionForm = ({
   onValueChange,
   onFocusChange,
 }: ManualTransactionFormProps) => {
-  const { width } = useWindowDimensions();
-  const isMobile = width <= 425;
-
   const fade = useRef(new Animated.Value(0)).current;
+
   useEffect(() => {
     Animated.timing(fade, { toValue: 1, duration: 220, useNativeDriver: true }).start();
   }, [fade]);
@@ -29,8 +27,9 @@ export const ManualTransactionForm = ({
   }, [formData.value, isFocused]);
 
   return (
-    <Animated.View style={{ opacity: fade }}>
-      <View style={[styles.selectContainer, isMobile && styles.selectContainerMobile]}>
+    <Animated.View style={[styles.form, { opacity: fade }]}>
+      {/* Tipo */}
+      <View style={styles.fieldContainer}>
         <Select
           value={formData.type}
           placeholder="Selecione o tipo de transação"
@@ -39,7 +38,8 @@ export const ManualTransactionForm = ({
         />
       </View>
 
-      <View style={[styles.selectContainer, isMobile && styles.selectContainerMobile]}>
+      {/* Categoria */}
+      <View style={styles.fieldContainer}>
         <Select
           value={formData.category}
           placeholder="Selecione a categoria"
@@ -48,7 +48,8 @@ export const ManualTransactionForm = ({
         />
       </View>
 
-      <View style={[styles.inputContainer, isMobile && styles.inputContainerMobile]}>
+      {/* Data */}
+      <View style={styles.fieldContainer}>
         <Text style={styles.inputLabel}>Data</Text>
         <TextInput
           value={formData.date}
@@ -60,7 +61,8 @@ export const ManualTransactionForm = ({
         />
       </View>
 
-      <View style={[styles.inputContainer, isMobile && styles.inputContainerMobile]}>
+      {/* Valor */}
+      <View style={styles.fieldContainer}>
         <Text style={styles.inputLabel}>Valor</Text>
         <TextInput
           value={inputValue}
@@ -76,31 +78,34 @@ export const ManualTransactionForm = ({
   );
 };
 
+const FIELD_MAX_WIDTH = 360; // ajuste se quiser mais largo/estreito
+
 const styles = StyleSheet.create({
-  selectContainer: {
-    width: 355,
-    height: 48,
+  // Contêiner do formulário centralizado
+  form: {
+    width: '100%',
+    alignItems: 'center', // centraliza horizontalmente os filhos
+    gap: 16,
+  },
+
+  // Cada “linha” (Select/Input) ocupa toda a largura disponível do miolo,
+  // mas limita pelo maxWidth para manter a estética
+  fieldContainer: {
+    width: '100%',
+    maxWidth: FIELD_MAX_WIDTH,
+    alignSelf: 'center',
     justifyContent: 'center',
   },
-  selectContainerMobile: {
-    width: '100%',
-  },
-  inputContainer: {
-    width: 250,
-  },
-  inputContainerMobile: {
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    width: 144,
-  },
+
   inputLabel: {
     fontSize: 16,
     fontWeight: '600',
     lineHeight: 19.36,
     textAlign: 'left',
     color: '#DEE9EA',
-    marginBottom: 16,
+    marginBottom: 12,
   },
+
   inputValue: {
     borderWidth: 1,
     borderColor: '#004D61',
@@ -114,10 +119,12 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingHorizontal: 12,
   },
+
   inputError: {
     borderColor: '#f44336',
     backgroundColor: '#ffebee',
   },
+
   errorText: {
     color: '#f44336',
     fontSize: 12,

@@ -4,7 +4,12 @@ import { Animated, Pressable, StyleSheet, Text, useWindowDimensions, View } from
 import { useTransactionForm } from '../../hooks/useTransactionForm';
 import { NewTransactionProps } from '../../types/components';
 import { CSVTransaction } from '../../types/transaction';
-import { createTransactionFromForm, createTransactionsFromCSV, getButtonText, isFormValid } from '../../utils/transactionUtils';
+import {
+  createTransactionFromForm,
+  createTransactionsFromCSV,
+  getButtonText,
+  isFormValid,
+} from '../../utils/transactionUtils';
 import { useValueValidation } from '../../utils/valueValidationUtils';
 import CSVUpload from '../CSVUpload/CSVUpload';
 import { CSVTransactionPreview } from './CSVTransactionPreview';
@@ -13,7 +18,11 @@ import { ModeSelector } from './ModeSelector';
 
 import TransactionBackground from '../../images/TransactionBackground.svg';
 
-export default function NewTransaction({ onTransactionAdded, className = '', disabled = false }: NewTransactionProps) {
+export default function NewTransaction({
+  onTransactionAdded,
+  className = '',
+  disabled = false,
+}: NewTransactionProps) {
   const {
     formData,
     isFocused,
@@ -45,7 +54,12 @@ export default function NewTransaction({ onTransactionAdded, className = '', dis
 
   const handleFinishTransaction = () => {
     if (inputMode === 'manual') {
-      const transaction = createTransactionFromForm(formData.type, formData.category, formData.value, formData.date);
+      const transaction = createTransactionFromForm(
+        formData.type,
+        formData.category,
+        formData.value,
+        formData.date
+      );
       addTransaction(transaction);
       clearForm();
       onTransactionAdded?.();
@@ -72,79 +86,90 @@ export default function NewTransaction({ onTransactionAdded, className = '', dis
   const buttonText = getButtonText(isMobile, inputMode, csvTransactions.length);
   const formIsValid = isFormValid(inputMode, formData, valueError, csvTransactions);
 
-  const pressIn = (v: Animated.Value) => Animated.spring(v, { toValue: 0.98, useNativeDriver: true }).start();
-  const pressOut = (v: Animated.Value) => Animated.spring(v, { toValue: 1, useNativeDriver: true }).start();
+  const pressIn = (v: Animated.Value) =>
+    Animated.spring(v, { toValue: 0.98, useNativeDriver: true }).start();
+  const pressOut = (v: Animated.Value) =>
+    Animated.spring(v, { toValue: 1, useNativeDriver: true }).start();
 
   return (
     <Animated.View style={[styles.transactionContainer, { opacity: fade }]}>
-      <View style={styles.transactionContent}>
-        <Text style={styles.title}>Nova transação</Text>
-
-        <ModeSelector currentMode={inputMode} onModeChange={setInputMode} />
-
-        {inputMode === 'manual' ? (
-          <ManualTransactionForm
-            formData={formData}
-            isFocused={isFocused}
-            valueError={valueError}
-            onFieldChange={updateFormField}
-            onValueChange={handleValueChange}
-            onFocusChange={setIsFocused}
-            onClear={clearForm}
-          />
-        ) : (
-          <>
-            <CSVUpload onTransactionsLoaded={handleCSVTransactionsLoaded} />
-            <CSVTransactionPreview transactions={csvTransactions} onClear={clearCSV} />
-          </>
-        )}
-
-        <View style={styles.buttonContainer}>
-          {inputMode === 'manual' && (
-            <Animated.View style={{ transform: [{ scale: scaleClear }] }}>
-              <Pressable
-                onPress={clearForm}
-                onPressIn={() => pressIn(scaleClear)}
-                onPressOut={() => pressOut(scaleClear)}
-                disabled={!formData.type && !formData.category && !formData.value}
-                style={[
-                  styles.clearButton,
-                  (!formData.type && !formData.category && !formData.value) && styles.clearButtonDisabled,
-                ]}
-              >
-                <Text style={styles.clearButtonText}>Limpar</Text>
-              </Pressable>
-            </Animated.View>
-          )}
-          {inputMode === 'csv' && csvTransactions.length > 0 && (
-            <Animated.View style={{ transform: [{ scale: scaleClear }] }}>
-              <Pressable
-                onPress={clearCSV}
-                onPressIn={() => pressIn(scaleClear)}
-                onPressOut={() => pressOut(scaleClear)}
-                style={styles.clearButton}
-              >
-                <Text style={styles.clearButtonText}>Limpar CSV</Text>
-              </Pressable>
-            </Animated.View>
-          )}
-
-          <Animated.View style={{ transform: [{ scale: scaleFinish }] }}>
-            <Pressable
-              onPress={handleFinishTransaction}
-              onPressIn={() => pressIn(scaleFinish)}
-              onPressOut={() => pressOut(scaleFinish)}
-              disabled={!formIsValid || disabled}
-              style={[styles.finishTransaction, (!formIsValid || disabled) && styles.finishTransactionDisabled]}
-            >
-              <Text style={styles.finishTransactionText}>{buttonText}</Text>
-            </Pressable>
-          </Animated.View>
-        </View>
-      </View>
-
+      {/* BG atrás */}
       <View pointerEvents="none" style={styles.bgDecoration}>
         <TransactionBackground width="100%" height="100%" preserveAspectRatio="xMaxYMax meet" />
+      </View>
+
+      {/* Conteúdo centralizado */}
+      <View style={styles.transactionContent} pointerEvents="auto">
+        <View style={styles.contentInner}>
+          <Text style={styles.title}>Nova transação</Text>
+
+          <View style={styles.fullWidth}>
+            <ModeSelector currentMode={inputMode} onModeChange={setInputMode} />
+          </View>
+
+          <View style={styles.fullWidth}>
+            {inputMode === 'manual' ? (
+              <ManualTransactionForm
+                formData={formData}
+                isFocused={isFocused}
+                valueError={valueError}
+                onFieldChange={updateFormField}
+                onValueChange={handleValueChange}
+                onFocusChange={setIsFocused}
+                onClear={clearForm}
+              />
+            ) : (
+              <>
+                <CSVUpload onTransactionsLoaded={handleCSVTransactionsLoaded} />
+                <CSVTransactionPreview transactions={csvTransactions} onClear={clearCSV} />
+              </>
+            )}
+          </View>
+
+          <View style={styles.buttonContainer}>
+            {inputMode === 'manual' && (
+              <Animated.View style={{ transform: [{ scale: scaleClear }] }}>
+                <Pressable
+                  onPress={clearForm}
+                  onPressIn={() => pressIn(scaleClear)}
+                  onPressOut={() => pressOut(scaleClear)}
+                  disabled={!formData.type && !formData.category && !formData.value}
+                  style={[
+                    styles.clearButton,
+                    !formData.type && !formData.category && !formData.value && styles.clearButtonDisabled,
+                  ]}
+                >
+                  <Text style={styles.clearButtonText}>Limpar</Text>
+                </Pressable>
+              </Animated.View>
+            )}
+
+            {inputMode === 'csv' && csvTransactions.length > 0 && (
+              <Animated.View style={{ transform: [{ scale: scaleClear }] }}>
+                <Pressable
+                  onPress={clearCSV}
+                  onPressIn={() => pressIn(scaleClear)}
+                  onPressOut={() => pressOut(scaleClear)}
+                  style={styles.clearButton}
+                >
+                  <Text style={styles.clearButtonText}>Limpar CSV</Text>
+                </Pressable>
+              </Animated.View>
+            )}
+
+            <Animated.View style={{ transform: [{ scale: scaleFinish }] }}>
+              <Pressable
+                onPress={handleFinishTransaction}
+                onPressIn={() => pressIn(scaleFinish)}
+                onPressOut={() => pressOut(scaleFinish)}
+                disabled={!formIsValid || disabled}
+                style={[styles.finishTransaction, (!formIsValid || disabled) && styles.finishTransactionDisabled]}
+              >
+                <Text style={styles.finishTransactionText}>{buttonText}</Text>
+              </Pressable>
+            </Animated.View>
+          </View>
+        </View>
       </View>
     </Animated.View>
   );
@@ -158,31 +183,44 @@ const styles = StyleSheet.create({
     position: 'relative',
     overflow: 'hidden',
   },
+
   transactionContent: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
-    position: 'relative',
+    zIndex: 1,
     width: '100%',
-    gap: 32,
+    alignItems: 'center',
   },
+
+  contentInner: {
+    width: '100%',
+    maxWidth: 440, // controla largura centralizada
+    gap: 24,
+    alignSelf: 'center',
+  },
+
   title: {
     fontSize: 25,
     fontWeight: '700',
     lineHeight: 30.26,
-    textAlign: 'center',
     color: '#DEE9EA',
+    textAlign: 'center',
+    alignSelf: 'center',
   },
+
+  fullWidth: {
+    width: '100%',
+  },
+
   buttonContainer: {
     flexDirection: 'row',
     gap: 12,
     width: '100%',
-    justifyContent: 'flex-start',
+    justifyContent: 'center', // centraliza os botões
     alignItems: 'center',
     marginTop: 16,
-    marginBottom: 20, // Espaço extra na parte inferior
-    paddingBottom: 10, // Padding adicional para garantir visibilidade
+    marginBottom: 20,
+    paddingBottom: 10,
   },
+
   clearButton: {
     width: 150,
     height: 48,
@@ -191,14 +229,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  clearButtonDisabled: {
-    backgroundColor: '#ccc',
-  },
-  clearButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
+  clearButtonDisabled: { backgroundColor: '#ccc' },
+  clearButtonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+
   finishTransaction: {
     width: 200,
     height: 48,
@@ -207,19 +240,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  finishTransactionDisabled: {
-    backgroundColor: '#ccc',
-  },
-  finishTransactionText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
+  finishTransactionDisabled: { backgroundColor: '#ccc' },
+  finishTransactionText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+
   bgDecoration: {
     position: 'absolute',
+    zIndex: 0,
     right: 0,
     bottom: 0,
+    left: 0,
+    top: 0,
     width: '100%',
     height: '100%',
+    pointerEvents: 'none',
   },
 });
