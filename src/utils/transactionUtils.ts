@@ -27,7 +27,7 @@ export const createTransactionsFromCSV = (transactions: CSVTransaction[]): Trans
 
 export const getButtonText = (isMobile: boolean, inputMode: 'manual' | 'csv', csvCount: number) => {
   if (inputMode === 'csv') {
-    return `Adicionar ${csvCount} transação${csvCount !== 1 ? 'ões' : ''}`;
+    return 'Adicionar';
   }
   
   return isMobile ? 'Concluir' : 'Concluir transação';

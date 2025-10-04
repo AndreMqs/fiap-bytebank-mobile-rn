@@ -1,10 +1,10 @@
-import { ThemedText } from '@/components/themed-text';
-import { useAuth } from '@/src/contexts/AuthContext';
 import { LinearGradient } from 'expo-linear-gradient';
-import { router } from 'expo-router';
+import { router, Stack } from 'expo-router';
 import React from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { ThemedText } from '../src/components/themed-text';
+import { useAuth } from '../src/contexts/AuthContext';
 
 export default function PerfilScreen() {
   const { user, logout } = useAuth();
@@ -18,26 +18,6 @@ export default function PerfilScreen() {
       .slice(0, 2);
   };
 
-  const handleMeusDados = () => {
-    router.push('/meus-dados');
-  };
-
-  const handleExcluirConta = () => {
-    Alert.alert(
-      'Excluir Conta',
-      'Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita.',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        { 
-          text: 'Excluir', 
-          style: 'destructive',
-          onPress: () => {
-            Alert.alert('Em desenvolvimento', 'Funcionalidade em desenvolvimento');
-          }
-        }
-      ]
-    );
-  };
 
   const handlePoliticaPrivacidade = () => {
     Alert.alert('Política de Privacidade', 'Funcionalidade em desenvolvimento');
@@ -52,20 +32,23 @@ export default function PerfilScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        {/* Header */}
+    <>
+      <Stack.Screen options={{ headerShown: false }} />
+      <SafeAreaView style={styles.safeArea}>
+        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         <LinearGradient
           colors={['#004D61', '#E4EDE3']}
           style={styles.header}
         >
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => router.back()}
-          >
-            <Text style={styles.backButtonText}>← Voltar</Text>
-          </TouchableOpacity>
-          <ThemedText style={styles.title}>Perfil</ThemedText>
+          <View style={styles.headerContent}>
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => router.back()}
+            >
+              <Text style={styles.backButtonText}>← Voltar</Text>
+            </TouchableOpacity>
+            <ThemedText style={styles.title}>Perfil</ThemedText>
+          </View>
         </LinearGradient>
 
         {/* Avatar e Informações */}
@@ -84,18 +67,8 @@ export default function PerfilScreen() {
             </ThemedText>
           </View>
 
-          {/* Lista de Opções */}
           <View style={styles.optionsContainer}>
-            <TouchableOpacity style={styles.optionButton} onPress={handleMeusDados}>
-              <View style={styles.optionContent}>
-                <Text style={styles.optionIcon}>👤</Text>
-                <View style={styles.optionText}>
-                  <Text style={styles.optionTitle}>Meus Dados</Text>
-                  <Text style={styles.optionSubtitle}>Editar informações pessoais</Text>
-                </View>
-              </View>
-              <Text style={styles.optionArrow}>›</Text>
-            </TouchableOpacity>
+          
 
             <TouchableOpacity style={styles.optionButton} onPress={handlePoliticaPrivacidade}>
               <View style={styles.optionContent}>
@@ -103,17 +76,6 @@ export default function PerfilScreen() {
                 <View style={styles.optionText}>
                   <Text style={styles.optionTitle}>Política de Privacidade</Text>
                   <Text style={styles.optionSubtitle}>Termos e condições</Text>
-                </View>
-              </View>
-              <Text style={styles.optionArrow}>›</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.optionButton} onPress={handleExcluirConta}>
-              <View style={styles.optionContent}>
-                <Text style={styles.optionIcon}>🗑️</Text>
-                <View style={styles.optionText}>
-                  <Text style={[styles.optionTitle, styles.dangerText]}>Excluir Conta</Text>
-                  <Text style={styles.optionSubtitle}>Remover conta permanentemente</Text>
                 </View>
               </View>
               <Text style={styles.optionArrow}>›</Text>
@@ -131,8 +93,9 @@ export default function PerfilScreen() {
             </TouchableOpacity>
           </View>
         </View>
-      </ScrollView>
-    </SafeAreaView>
+        </ScrollView>
+      </SafeAreaView>
+    </>
   );
 }
 
@@ -151,8 +114,14 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 25,
     borderBottomRightRadius: 25,
   },
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+  },
   backButton: {
-    marginBottom: 15,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
   },
   backButtonText: {
     color: 'white',
