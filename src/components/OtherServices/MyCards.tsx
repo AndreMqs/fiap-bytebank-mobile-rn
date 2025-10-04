@@ -28,7 +28,7 @@ export default function MyCards({ onBack }: { onBack: () => void }) {
       </View>
 
       <View style={styles.content}>
-        <View style={styles.titleRow}>
+        <View style={styles.titleWrapper}>
           <Pressable onPress={onBack} style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}>
             <Text style={styles.backButtonText}>←</Text>
           </Pressable>
@@ -105,22 +105,24 @@ const styles = StyleSheet.create({
     maxWidth: MAX_CONTENT_WIDTH,
     gap: 24,
   },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    justifyContent: 'center',
+  titleWrapper: {
     width: '100%',
     maxWidth: MAX_CONTENT_WIDTH,
     marginBottom: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
   },
   titleText: {
     fontSize: 25,
     fontWeight: '700',
     color: '#000',
     lineHeight: 30,
+    textAlign: 'center',
   },
   backButton: {
+    position: 'absolute',
+    left: 0,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
