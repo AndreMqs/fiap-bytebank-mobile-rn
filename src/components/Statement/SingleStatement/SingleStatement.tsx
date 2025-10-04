@@ -15,7 +15,7 @@ export default function SingleStatement(props: SingleStatementProps) {
   }, [value]);
 
   const handleDelete = () => {
-    deleteTransaction(transaction.id);
+    deleteTransaction(transaction.id, userId ?? '');
   };
 
   const handleSaveEdit = async () => {

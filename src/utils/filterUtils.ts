@@ -1,7 +1,7 @@
-import { Transaction } from '../types/api';
 import { FilterCriteria } from '../types/statement';
+import { TransactionData } from '../types/transaction';
 
-export function filterTransactions(transactions: Transaction[], filters: FilterCriteria): Transaction[] {
+export function filterTransactions(transactions: TransactionData[], filters: FilterCriteria): TransactionData[] {
   return transactions.filter(transaction => {
 
     if (filters.category && transaction.category !== filters.category) {

@@ -1,4 +1,4 @@
-import { useStore } from '@/src/store/useStore';
+import { useUserTransactions } from '@/src/hooks/useUserTransactions';
 import React, { useMemo, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import Eye from '../../images/Eye.svg';
@@ -9,13 +9,23 @@ interface SummaryProps {
 }
 
 export default function Summary(props: SummaryProps) {
-  const { getBalance } = useStore();
+  const { transactions } = useUserTransactions();
   const { width } = useWindowDimensions();
   const isMobile = width <= 480;
   const [isBalanceVisible, setIsBalanceVisible] = useState(true);
   const dateText = useMemo(() => parseDateString(new Date()), []);
   
-  const money = getBalance();
+  const money = transactions.reduce((acc, curr) => {
+    if (curr.type === 'income') {
+      return acc + (+curr.value);
+    }
+
+    if (curr.type === 'expense') {
+      return acc - (+curr.value);
+    }
+
+    return acc;
+  }, 0);
 
   const moneyText = isBalanceVisible ? parseMoneyValue(money) : '••••••';
 
