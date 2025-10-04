@@ -37,10 +37,8 @@ export class TransactionService {
     }
   }
 
-  // Buscar transações do usuário
   static async getTransactions(userId: string): Promise<Transaction[]> {
     try {
-      // Usar subcoleção: users/{userId}/transactions
       const userTransactionsRef = collection(db, this.USERS_COLLECTION, userId, this.TRANSACTIONS_SUBCOLLECTION);
       const q = query(userTransactionsRef, orderBy('createdAt', 'desc'));
       

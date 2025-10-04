@@ -41,11 +41,9 @@ export default function Statement(props: StatementProps) {
   );
 
   useEffect(() => {
-    // Reset displayed transactions when filters change
     setDisplayedTransactions([]);
     setHasMore(filteredTransactions.length > 0);
     
-    // Load initial items (4 transações)
     const initialItems = filteredTransactions.slice(0, INITIAL_ITEMS);
     setDisplayedTransactions(initialItems);
     const newHasMore = filteredTransactions.length > INITIAL_ITEMS;
@@ -59,7 +57,6 @@ export default function Statement(props: StatementProps) {
     
     setIsLoading(true);
     
-    // Simular delay de carregamento
     await new Promise((r) => setTimeout(r, 300));
     
     const currentLength = displayedTransactions.length;

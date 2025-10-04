@@ -56,7 +56,6 @@ export default function CSVUpload({ onTransactionsLoaded }: CSVUploadProps) {
         throw new Error('Arquivo CSV deve ter pelo menos 2 linhas (cabeçalho + dados)');
       }
 
-      // Verificar cabeçalho
       const header = lines[0].toLowerCase().replace(/\s/g, '');
       if (!header.includes('type') || !header.includes('value') || !header.includes('category') || !header.includes('date')) {
         throw new Error('Cabeçalho inválido. Esperado: type,value,category,date');
@@ -79,25 +78,20 @@ export default function CSVUpload({ onTransactionsLoaded }: CSVUploadProps) {
         
         const [type, value, category, date] = columns;
         
-        // Validar tipo
         const validTypes = ['income', 'expense', 'receita', 'despesa'];
         if (!validTypes.includes(type.toLowerCase())) {
           throw new Error(`Linha ${i + 2}: Tipo inválido "${type}". Use: income/expense ou receita/despesa`);
         }
         
-        // Validar valor
         const parsedValue = parseFloat(value.replace(',', '.'));
         if (isNaN(parsedValue) || parsedValue <= 0) {
           throw new Error(`Linha ${i + 2}: Valor inválido "${value}". Use um número maior que 0`);
         }
         
-        // Validar categoria
         const validCategories = ['Alimentação', 'Moradia', 'Saúde', 'Estudo', 'Transporte'];
         if (!validCategories.includes(category)) {
           throw new Error(`Linha ${i + 2}: Categoria inválida "${category}". Use: ${validCategories.join(', ')}`);
         }
-        
-        // Validar data
         const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
         if (!dateRegex.test(date)) {
           throw new Error(`Linha ${i + 2}: Data inválida "${date}". Use formato: YYYY-MM-DD`);
@@ -123,7 +117,6 @@ export default function CSVUpload({ onTransactionsLoaded }: CSVUploadProps) {
 
   const readFileContent = async (file: any): Promise<string> => {
     if (Platform.OS === 'web') {
-      // Para web, usar FileReader com o objeto File nativo
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -132,7 +125,6 @@ export default function CSVUpload({ onTransactionsLoaded }: CSVUploadProps) {
         };
         reader.onerror = () => reject(new Error('Erro ao ler arquivo'));
         
-        // No web, o DocumentPicker retorna file.file que é o objeto File nativo
         if (file.file) {
           reader.readAsText(file.file);
         } else {
@@ -140,14 +132,11 @@ export default function CSVUpload({ onTransactionsLoaded }: CSVUploadProps) {
         }
       });
     } else {
-      // Para mobile, usar fetch como alternativa mais robusta
       try {
-        // Primeira tentativa: usar fetch (mais confiável)
         const response = await fetch(file.uri);
         const text = await response.text();
         return text;
       } catch (fetchError) {
-        // Segunda tentativa: usar FileSystem com encoding string
         try {
           const FileSystem = require('expo-file-system');
           const text = await FileSystem.readAsStringAsync(file.uri, {

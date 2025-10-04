@@ -97,7 +97,6 @@ export default function ExtratoScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        {/* Header */}
         <LinearGradient
           colors={['#004D61', '#E4EDE3']}
           style={styles.header}
@@ -111,7 +110,6 @@ export default function ExtratoScreen() {
           </ThemedText>
         </LinearGradient>
 
-        {/* Content */}
         <View style={styles.statementContainer}>
           {renderContent()}
         </View>

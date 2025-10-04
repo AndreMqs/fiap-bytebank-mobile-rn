@@ -26,7 +26,6 @@ export default function StatementList(props: StatementListProps) {
 
   const capitalizeLocal = useCallback((s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s), []);
 
-  // Transform data for FlatList
   const flatListData = useMemo(() => {
     const items: Array<{ type: 'month' | 'transaction'; data: any; month?: string; index?: number }> = [];
     

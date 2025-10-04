@@ -9,7 +9,6 @@ export default function InvestimentosScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        {/* Header */}
         <LinearGradient
           colors={['#004D61', '#E4EDE3']}
           style={styles.header}
@@ -20,7 +19,6 @@ export default function InvestimentosScreen() {
           </ThemedText>
         </LinearGradient>
 
-        {/* Investments Component */}
         <View style={styles.investmentsContainer}>
           <Investments />
         </View>

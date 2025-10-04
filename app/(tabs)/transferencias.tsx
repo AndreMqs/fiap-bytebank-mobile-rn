@@ -25,7 +25,6 @@ export default function TransferenciasScreen() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Header */}
         <LinearGradient
           colors={['#004D61', '#E4EDE3']}
           style={styles.header}
@@ -39,7 +38,6 @@ export default function TransferenciasScreen() {
           </ThemedText>
         </LinearGradient>
 
-        {/* Content */}
         <View style={styles.container}>
           <NewTransaction onTransactionAdded={handleTransactionAdded} />
         </View>

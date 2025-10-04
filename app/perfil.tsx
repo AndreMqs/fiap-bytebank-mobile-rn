@@ -51,7 +51,6 @@ export default function PerfilScreen() {
           </View>
         </LinearGradient>
 
-        {/* Avatar e Informações */}
         <View style={styles.profileContainer}>
           <View style={styles.avatarContainer}>
             <View style={styles.avatar}>
