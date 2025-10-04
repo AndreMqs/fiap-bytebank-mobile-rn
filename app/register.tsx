@@ -74,7 +74,7 @@ export default function RegisterScreen() {
 
   return (
     <LinearGradient
-      colors={['#667eea', '#764ba2']}
+      colors={['#004D61', '#E4EDE3']}
       style={styles.container}
     >
       <KeyboardAvoidingView
@@ -247,8 +247,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   checkboxChecked: {
-    backgroundColor: '#667eea',
-    borderColor: '#667eea',
+    backgroundColor: '#004D61',
+    borderColor: '#004D61',
   },
   checkmark: {
     color: 'white',
@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   registerButtonText: {
-    color: '#667eea',
+    color: '#004D61',
     fontSize: 18,
     fontWeight: 'bold',
   },

@@ -3,15 +3,15 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 
 export default function LoginScreen() {
@@ -54,13 +54,10 @@ export default function LoginScreen() {
     }
   };
 
-  const handleForgotPassword = () => {
-    router.push('/forgot-password');
-  };
 
   return (
     <LinearGradient
-      colors={['#667eea', '#764ba2']}
+      colors={['#004D61', '#E4EDE3']}
       style={styles.container}
     >
       <KeyboardAvoidingView
@@ -101,12 +98,6 @@ export default function LoginScreen() {
               />
             </View>
 
-            <TouchableOpacity
-              style={styles.forgotPassword}
-              onPress={handleForgotPassword}
-            >
-              <Text style={styles.forgotPasswordText}>Esqueceu sua senha?</Text>
-            </TouchableOpacity>
 
             <TouchableOpacity
               style={[styles.loginButton, loading && styles.loginButtonDisabled]}
@@ -178,15 +169,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.3)',
   },
-  forgotPassword: {
-    alignSelf: 'flex-end',
-    marginBottom: 30,
-  },
-  forgotPasswordText: {
-    color: 'white',
-    fontSize: 14,
-    textDecorationLine: 'underline',
-  },
   loginButton: {
     backgroundColor: 'white',
     borderRadius: 12,
@@ -198,7 +180,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   loginButtonText: {
-    color: '#667eea',
+    color: '#004D61',
     fontSize: 18,
     fontWeight: 'bold',
   },
