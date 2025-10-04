@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 
 import { AuthProvider, useAuth } from '@/src/contexts/AuthContext';
-import { useColorScheme } from '@/src/hooks/use-color-scheme.web';
+import { useColorScheme } from '@/src/hooks/use-color-scheme';
 
 export const unstable_settings = {
   anchor: '(tabs)',

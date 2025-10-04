@@ -2,6 +2,7 @@ import { User, createUserWithEmailAndPassword, onAuthStateChanged, sendPasswordR
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { auth } from '../lib/firebase';
 import { UserDataService } from '../services/userDataService';
+import { useStore } from '../store/useStore';
 import { UserData } from '../types/User';
 
 interface AuthContextType {
@@ -18,15 +19,20 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const { clearStore } = useStore();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
+      
+      if (!user) {
+        clearStore();
+      }
     });
 
     return unsubscribe;
-  }, []);
+  }, [clearStore]);
 
   const login = async (email: string, password: string) => {
     try {

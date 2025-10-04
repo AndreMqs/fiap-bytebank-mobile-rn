@@ -10,6 +10,13 @@ export const useStore = create<StoreState>((set, get) => ({
   error: null,
 
   fetchUser: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      set({ isLoading: false });
+    } catch (error) {
+      console.error('Error fetching user:', error);
+      set({ error: 'Erro ao carregar dados do usuário', isLoading: false });
+    }
   },
 
   fetchTransactions: async (userId: string) => {
@@ -124,5 +131,15 @@ export const useStore = create<StoreState>((set, get) => ({
       value,
       color: colors[index % colors.length],
     }));
+  },
+
+
+  clearStore: () => {
+    set({
+      user: null,
+      transactions: [],
+      isLoading: false,
+      error: null,
+    });
   },
 })); 

@@ -3,7 +3,6 @@ import Summary from "@/src/components/Summary/Summary";
 import { useAuth } from "@/src/contexts/AuthContext";
 import { UserDataService } from "@/src/services/userDataService";
 import { useStore } from "@/src/store/useStore";
-import { User } from "@/src/types/User";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
@@ -21,7 +20,7 @@ const CONTENT_MAX = 840;
 export default function HomeScreen() {
   const { user } = useAuth();
   const { user: storeUser, fetchUser, fetchTransactions } = useStore();
-  const [userData, setUserData] = useState<User | null>(null);
+  const [userData, setUserData] = useState<any | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -33,9 +32,24 @@ export default function HomeScreen() {
           console.error("Erro ao carregar dados do usuário:", e);
         }
       })();
+      
       fetchUser();
       fetchTransactions(user.uid);
     }
+  }, [user, fetchUser, fetchTransactions]);
+
+  useEffect(() => {
+    const unsubscribe = () => {
+      if (user) {
+
+        fetchUser();
+        fetchTransactions(user.uid);
+      }
+    };
+
+    unsubscribe();
+
+    return () => {};
   }, [user, fetchUser, fetchTransactions]);
 
   const displayUser = useMemo(
@@ -51,7 +65,7 @@ export default function HomeScreen() {
       displayUser?.name
         ? displayUser.name
             .split(" ")
-            .map((n) => n[0])
+            .map((n: string) => n[0])
             .join("")
             .toUpperCase()
         : "U",
@@ -85,10 +99,7 @@ export default function HomeScreen() {
 
         <View style={styles.sectionMax}>
           <View style={styles.cardGap}>
-            <Summary
-              username={displayUser?.name ?? "Usuário"}
-              money={balance}
-            />
+            <Summary />
           </View>
 
           <View style={styles.cardGap}>
