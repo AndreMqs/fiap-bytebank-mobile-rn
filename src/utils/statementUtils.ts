@@ -1,7 +1,7 @@
-import { Transaction } from "../types";
+import { TransactionData } from "../types/transaction";
 
-export function getStatementByMonth(transactions: Transaction[]) {
-  const monthMap = new Map<string, Transaction[]>();
+export function getStatementByMonth(transactions: TransactionData[]) {
+  const monthMap = new Map<string, TransactionData[]>();
   transactions.forEach((transaction) => {
     const month = new Date(transaction.date).toLocaleString('default', { month: 'long' });
     const prevItem = monthMap.get(month);

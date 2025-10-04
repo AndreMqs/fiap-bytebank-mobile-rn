@@ -57,7 +57,7 @@ export default function OtherServices() {
           const onPressOut = () => Animated.spring(pressScale, { toValue: 1, useNativeDriver: true }).start();
           const isSelected = selected === service.key;
           return (
-            <Animated.View key={service.key} style={{ transform: [{ scale: pressScale }], flexBasis: cardBasis, maxWidth: '100%' }}>
+            <Animated.View key={service.key} style={{ transform: [{ scale: pressScale }], flexBasis: cardBasis as any, maxWidth: '100%' }}>
               <Pressable
                 onPress={() => {
                   setSelected(service.key);

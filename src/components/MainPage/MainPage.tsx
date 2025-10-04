@@ -118,7 +118,7 @@ export default function MainPage() {
             (isTablet || isMobile) && styles.scrollContentTablet,
           ]}
           nestedScrollEnabled
-          removeClippedSubviews={false}    // impede que o Summary seja “recortado” no Android
+          removeClippedSubviews={false}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         >
           {renderMiddleContent()}

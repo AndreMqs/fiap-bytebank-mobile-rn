@@ -1,3 +1,4 @@
+import { TransactionData } from "./transaction";
 
 export interface Statement {
   type: string;
@@ -16,7 +17,7 @@ export interface FilterCriteria {
 
 export interface StatementProps {
   transactions: TransactionData[];
-  deleteTransaction: (id: string) => Promise<void>;
+  deleteTransaction: (transactionId: string, userId: string) => Promise<void>;
   updateTransaction?: (id: string, userId: string, transactionData: Partial<TransactionData>) => Promise<void>;
   userId?: string;
 }
@@ -24,7 +25,7 @@ export interface StatementProps {
 export interface SingleStatementProps {
   transaction: TransactionData;
   isEditing: boolean;
-  deleteTransaction: (id: string) => Promise<void>;
+  deleteTransaction: (transactionId: string, userId: string) => Promise<void>;
   updateTransaction?: (id: string, userId: string, transactionData: Partial<TransactionData>) => Promise<void>;
   userId?: string;
 }
@@ -32,7 +33,7 @@ export interface SingleStatementProps {
 export interface StatementListProps {
   statementsByMonth: Map<string, TransactionData[]>;
   isEditing: boolean;
-  deleteTransaction: (id: string) => Promise<void>;
+  deleteTransaction: (transactionId: string, userId: string) => Promise<void>;
   updateTransaction?: (id: string, userId: string, transactionData: Partial<TransactionData>) => Promise<void>;
   userId?: string;
   onLoadMore?: () => void;
