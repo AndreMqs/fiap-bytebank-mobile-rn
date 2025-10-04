@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { ActivityIndicator, Animated, NativeScrollEvent, NativeSyntheticEvent, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Animated, FlatList, StyleSheet, Text, View } from 'react-native';
 import { StatementListProps } from '../../../types/statement';
 import SingleStatement from '../SingleStatement/SingleStatement';
 
@@ -8,7 +8,6 @@ export default function StatementList(props: StatementListProps) {
 
   const fade = useRef(new Animated.Value(0)).current;
   const spinnerScale = useRef(new Animated.Value(1)).current;
-  const threshold = 50;
 
   useEffect(() => {
     Animated.timing(fade, { toValue: 1, duration: 220, useNativeDriver: true }).start();
@@ -27,51 +26,72 @@ export default function StatementList(props: StatementListProps) {
 
   const capitalizeLocal = useCallback((s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s), []);
 
-  const canLoadRef = useRef(true);
-  useEffect(() => {
-    canLoadRef.current = true;
-  }, [isLoading]);
+  // Transform data for FlatList
+  const flatListData = useMemo(() => {
+    const items: Array<{ type: 'month' | 'transaction'; data: any; month?: string; index?: number }> = [];
+    
+    months.forEach((month) => {
+      items.push({ type: 'month', data: month, month });
+      const transactions = statementsByMonth.get(month) || [];
+      transactions.forEach((transaction, index) => {
+        items.push({ type: 'transaction', data: transaction, month, index });
+      });
+    });
+    
+    return items;
+  }, [statementsByMonth, months]);
 
-  const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const { contentOffset, contentSize, layoutMeasurement } = e.nativeEvent;
-    const distanceFromBottom = contentSize.height - (contentOffset.y + layoutMeasurement.height);
-    if (distanceFromBottom < threshold && hasMore && !isLoading && canLoadRef.current) {
-      canLoadRef.current = false;
-      onLoadMore && onLoadMore();
+  const renderItem = useCallback(({ item }: { item: any }) => {
+    if (item.type === 'month') {
+      return <Text style={styles.month}>{capitalizeLocal(item.data)}</Text>;
     }
-  };
+    
+    return (
+      <SingleStatement
+        transaction={item.data}
+        isEditing={isEditing}
+        deleteTransaction={deleteTransaction}
+        updateTransaction={updateTransaction}
+        userId={userId}
+        key={`${item.month}-${item.data.id}-${item.index}`}
+      />
+    );
+  }, [isEditing, deleteTransaction, updateTransaction, userId, capitalizeLocal]);
+
+  const handleEndReached = useCallback(() => {
+    if (hasMore && !isLoading && onLoadMore) {
+      onLoadMore();
+    }
+  }, [hasMore, isLoading, onLoadMore]);
+
+  const renderFooter = useCallback(() => {
+    if (isLoading) {
+      return (
+        <Animated.View style={[styles.loadingContainer, { transform: [{ scale: spinnerScale }] }]}>
+          <ActivityIndicator size="small" color="#47A138" />
+        </Animated.View>
+      );
+    }
+    
+    if (hasMore) {
+      return <View style={{ height: 20 }} />;
+    }
+    
+    return null;
+  }, [isLoading, hasMore, spinnerScale]);
 
   return (
     <Animated.View style={[styles.statementListWrapper, { opacity: fade }]}>
-      <ScrollView onScroll={onScroll} scrollEventThrottle={16} contentContainerStyle={{ paddingRight: 8 }}>
-        {months.map((month) => (
-          <View key={month}>
-            <Text style={styles.month}>{capitalizeLocal(month)}</Text>
-            <View style={styles.listContainer}>
-              {statementsByMonth.get(month)?.map((statement, index) => (
-                <SingleStatement
-                  transaction={statement}
-                  isEditing={isEditing}
-                  deleteTransaction={deleteTransaction}
-                  updateTransaction={updateTransaction}
-                  userId={userId}
-                  key={`${month}-${statement.id}-${index}`}
-                />
-              ))}
-            </View>
-          </View>
-        ))}
-
-        <View style={styles.loadingContainer}>
-          {isLoading ? (
-            <Animated.View style={{ transform: [{ scale: spinnerScale }] }}>
-              <ActivityIndicator size="small" color="#47A138" />
-            </Animated.View>
-          ) : hasMore ? (
-            <View style={{ height: 20 }} />
-          ) : null}
-        </View>
-      </ScrollView>
+      <FlatList
+        data={flatListData}
+        renderItem={renderItem}
+        keyExtractor={(item, index) => `${item.type}-${index}-${item.data.id || item.data}`}
+        onEndReached={handleEndReached}
+        onEndReachedThreshold={0.1}
+        contentContainerStyle={{ paddingRight: 8 }}
+        ListFooterComponent={renderFooter}
+        showsVerticalScrollIndicator={false}
+      />
     </Animated.View>
   );
 }
@@ -84,8 +104,6 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     color: '#47A138',
     marginBottom: 8,
-  },
-  listContainer: {
     marginTop: 8,
   },
   statementListWrapper: {

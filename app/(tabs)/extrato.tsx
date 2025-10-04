@@ -6,24 +6,18 @@ import { useStore } from '@/src/store/useStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import {
-  ActivityIndicator,
-  Alert,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  View
+    ActivityIndicator,
+    Alert,
+    StyleSheet,
+    View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ExtratoScreen() {
   const { transactions, userId, isLoading, error } = useUserTransactions();
-  const { deleteTransaction, updateTransaction, fetchTransactions } = useStore();
+  const { deleteTransaction, updateTransaction } = useStore();
 
-  const handleRefresh = async () => {
-    if (userId) {
-      await fetchTransactions(userId);
-    }
-  };
+
 
   const handleDeleteTransaction = async (id: string) => {
     if (!userId) return;
@@ -102,18 +96,7 @@ export default function ExtratoScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView 
-        style={styles.container} 
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={isLoading}
-            onRefresh={handleRefresh}
-            colors={['#004D61']}
-            tintColor="#004D61"
-          />
-        }
-      >
+      <View style={styles.container}>
         {/* Header */}
         <LinearGradient
           colors={['#004D61', '#E4EDE3']}
@@ -132,7 +115,7 @@ export default function ExtratoScreen() {
         <View style={styles.statementContainer}>
           {renderContent()}
         </View>
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }

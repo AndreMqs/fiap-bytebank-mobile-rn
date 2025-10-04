@@ -10,7 +10,6 @@ export const useStore = create<StoreState>((set, get) => ({
   error: null,
 
   fetchUser: async () => {
-    console.log('fetchUser not implemented yet');
   },
 
   fetchTransactions: async (userId: string) => {

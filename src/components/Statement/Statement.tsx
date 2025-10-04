@@ -24,9 +24,11 @@ export default function Statement(props: StatementProps) {
     type: '',
   });
   const [displayedTransactions, setDisplayedTransactions] = useState<typeof transactions>([]);
+
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
 
+  const INITIAL_ITEMS = 4;
   const ITEMS_PER_PAGE = 1;
 
   const filteredTransactions = useMemo(
@@ -43,20 +45,28 @@ export default function Statement(props: StatementProps) {
     setDisplayedTransactions([]);
     setHasMore(filteredTransactions.length > 0);
     
-    // Load initial items
-    const initialItems = filteredTransactions.slice(0, 5);
+    // Load initial items (4 transações)
+    const initialItems = filteredTransactions.slice(0, INITIAL_ITEMS);
     setDisplayedTransactions(initialItems);
-    const newHasMore = filteredTransactions.length > 5;
+    const newHasMore = filteredTransactions.length > INITIAL_ITEMS;
     setHasMore(newHasMore);
   }, [filteredTransactions]);
 
   const handleLoadMore = async () => {
-    if (isLoading || !hasMore) return;
+    if (isLoading || !hasMore) {
+      return;
+    }
+    
     setIsLoading(true);
+    
+    // Simular delay de carregamento
     await new Promise((r) => setTimeout(r, 300));
+    
     const currentLength = displayedTransactions.length;
     const newItems = filteredTransactions.slice(currentLength, currentLength + ITEMS_PER_PAGE);
+    
     setDisplayedTransactions((prev) => [...prev, ...newItems]);
+    
     const nextLength = currentLength + ITEMS_PER_PAGE;
     const newHasMore = nextLength < filteredTransactions.length;
     setHasMore(newHasMore);
