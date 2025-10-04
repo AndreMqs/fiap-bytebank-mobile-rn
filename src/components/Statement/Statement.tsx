@@ -6,6 +6,7 @@ import Filter from '../../images/Filter.svg';
 import { FilterCriteria, StatementProps } from '../../types/statement';
 import { filterTransactions, getActiveFiltersCount } from '../../utils/filterUtils';
 import { getStatementByMonth } from '../../utils/statementUtils';
+import EmptyState from './EmptyState/EmptyState';
 import FilterModal from './FilterModal/FilterModal';
 import StatementList from './StatementList/StatementList';
 
@@ -38,16 +39,16 @@ export default function Statement(props: StatementProps) {
   );
 
   useEffect(() => {
+    // Reset displayed transactions when filters change
     setDisplayedTransactions([]);
     setHasMore(filteredTransactions.length > 0);
-  }, [activeFilters, filteredTransactions.length]);
-
-  useEffect(() => {
+    
+    // Load initial items
     const initialItems = filteredTransactions.slice(0, 5);
     setDisplayedTransactions(initialItems);
     const newHasMore = filteredTransactions.length > 5;
     setHasMore(newHasMore);
-  }, [filteredTransactions.length]);
+  }, [filteredTransactions]);
 
   const handleLoadMore = async () => {
     if (isLoading || !hasMore) return;
@@ -127,14 +128,25 @@ export default function Statement(props: StatementProps) {
       </View>
 
       <View style={styles.statementsListContainer}>
-        <StatementList
-          statementsByMonth={getStatementByMonth(displayedTransactions)}
-          isEditing={isEditing}
-          deleteTransaction={deleteTransaction}
-          onLoadMore={handleLoadMore}
-          hasMore={hasMore}
-          isLoading={isLoading}
-        />
+        {filteredTransactions.length === 0 ? (
+          <EmptyState
+            title="Nenhuma transação encontrada"
+            subtitle={activeFiltersCount > 0 
+              ? "Nenhuma transação corresponde aos filtros aplicados. Tente ajustar os critérios de busca ou limpar os filtros."
+              : "Seu extrato está vazio. Comece adicionando suas primeiras transações para acompanhar suas movimentações financeiras."
+            }
+            icon="🔍"
+          />
+        ) : (
+          <StatementList
+            statementsByMonth={getStatementByMonth(displayedTransactions)}
+            isEditing={isEditing}
+            deleteTransaction={deleteTransaction}
+            onLoadMore={handleLoadMore}
+            hasMore={hasMore}
+            isLoading={isLoading}
+          />
+        )}
       </View>
 
       <FilterModal

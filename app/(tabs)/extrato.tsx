@@ -1,4 +1,5 @@
 import { ThemedText } from '@/components/themed-text';
+import EmptyState from '@/src/components/Statement/EmptyState/EmptyState';
 import Statement from '@/src/components/Statement/Statement';
 import { useUserTransactions } from '@/src/hooks/useUserTransactions';
 import { useStore } from '@/src/store/useStore';
@@ -72,12 +73,11 @@ export default function ExtratoScreen() {
 
     if (transactions.length === 0) {
       return (
-        <View style={styles.emptyContainer}>
-          <ThemedText style={styles.emptyText}>📄 Nenhuma transação encontrada</ThemedText>
-          <ThemedText style={styles.emptySubtext}>
-            Adicione transações na aba "Transferir" para vê-las aqui
-          </ThemedText>
-        </View>
+        <EmptyState
+          title="Nenhuma transação encontrada"
+          subtitle="Seu extrato está vazio. Comece adicionando suas primeiras transações para acompanhar suas movimentações financeiras."
+          icon="📊"
+        />
       );
     }
 
@@ -105,7 +105,7 @@ export default function ExtratoScreen() {
       >
         {/* Header */}
         <LinearGradient
-          colors={['#667eea', '#764ba2']}
+          colors={['#004D61', '#E4EDE3']}
           style={styles.header}
         >
           <ThemedText style={styles.title}>Extrato</ThemedText>
@@ -185,26 +185,6 @@ const styles = StyleSheet.create({
   errorSubtext: {
     fontSize: 14,
     color: '#666',
-    textAlign: 'center',
-    lineHeight: 20,
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 40,
-    paddingHorizontal: 20,
-  },
-  emptyText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#666',
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  emptySubtext: {
-    fontSize: 14,
-    color: '#999',
     textAlign: 'center',
     lineHeight: 20,
   },

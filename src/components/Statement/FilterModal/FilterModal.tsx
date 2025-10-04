@@ -22,7 +22,10 @@ export default function FilterModal({ open, onClose, onApplyFilters, currentFilt
   };
 
   const handleClearFilters = () => {
-    setFilters({ category: '', dateFrom: '', dateTo: '', valueMin: '', valueMax: '', type: '' });
+    const emptyFilters = { category: '', dateFrom: '', dateTo: '', valueMin: '', valueMax: '', type: '' };
+    setFilters(emptyFilters);
+    onApplyFilters(emptyFilters);
+    onClose();
   };
 
   const handleApply = () => {
@@ -34,9 +37,6 @@ export default function FilterModal({ open, onClose, onApplyFilters, currentFilt
 
   const fade = useRef(new Animated.Value(0)).current;
   const scaleBadge = useRef(new Animated.Value(1)).current;
-  const scaleApply = useRef(new Animated.Value(1)).current;
-  const scaleCancel = useRef(new Animated.Value(1)).current;
-  const scaleClear = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     if (open) {
@@ -54,8 +54,6 @@ export default function FilterModal({ open, onClose, onApplyFilters, currentFilt
     }
   }, [activeCount, scaleBadge]);
 
-  const pressIn = (v: Animated.Value) => Animated.spring(v, { toValue: 0.97, useNativeDriver: true }).start();
-  const pressOut = (v: Animated.Value) => Animated.spring(v, { toValue: 1, useNativeDriver: true }).start();
 
   if (!open) return null;
 
@@ -69,11 +67,16 @@ export default function FilterModal({ open, onClose, onApplyFilters, currentFilt
         <View style={[styles.modalContainer, { width: width * 0.9, maxWidth: 500 }]}>
           <View style={styles.modalTitle}>
             <Text style={styles.modalTitleText}>Filtros</Text>
-            {activeCount > 0 && (
-              <Animated.View style={[styles.filterCount, { transform: [{ scale: scaleBadge }] }]}>
-                <Text style={styles.filterCountText}>{activeCount}</Text>
-              </Animated.View>
-            )}
+            <View style={styles.titleRight}>
+              {activeCount > 0 && (
+                <Animated.View style={[styles.filterCount, { transform: [{ scale: scaleBadge }] }]}>
+                  <Text style={styles.filterCountText}>{activeCount}</Text>
+                </Animated.View>
+              )}
+              <Pressable onPress={onClose} style={styles.closeButton}>
+                <Text style={styles.closeButtonText}>✕</Text>
+              </Pressable>
+            </View>
           </View>
 
           <ScrollView style={styles.modalContent} contentContainerStyle={{ paddingBottom: 16 }}>
@@ -94,10 +97,13 @@ export default function FilterModal({ open, onClose, onApplyFilters, currentFilt
                 <Text style={styles.label}>Tipo</Text>
                 <View style={styles.inputWrapper}>
                   <Select
-                    value={filters.type}
+                    value={filters.type === 'income' ? 'Receita' : filters.type === 'expense' ? 'Despesa' : ''}
                     placeholder="Todos"
-                    options={['income', 'expense']}
-                    onChange={(v) => handleFilterChange('type', v)}
+                    options={['Receita', 'Despesa']}
+                    onChange={(v) => {
+                      const typeValue = v === 'Receita' ? 'income' : v === 'Despesa' ? 'expense' : '';
+                      handleFilterChange('type', typeValue);
+                    }}
                   />
                 </View>
               </View>
@@ -107,7 +113,8 @@ export default function FilterModal({ open, onClose, onApplyFilters, currentFilt
                 <TextInput
                   value={filters.dateFrom}
                   onChangeText={(t) => handleFilterChange('dateFrom', t)}
-                  placeholder="YYYY-MM-DD"
+                  placeholder="Ex: 2024-01-15"
+                  placeholderTextColor="#999"
                   style={styles.textInput}
                 />
               </View>
@@ -117,7 +124,8 @@ export default function FilterModal({ open, onClose, onApplyFilters, currentFilt
                 <TextInput
                   value={filters.dateTo}
                   onChangeText={(t) => handleFilterChange('dateTo', t)}
-                  placeholder="YYYY-MM-DD"
+                  placeholder="Ex: 2024-12-31"
+                  placeholderTextColor="#999"
                   style={styles.textInput}
                 />
               </View>
@@ -145,38 +153,19 @@ export default function FilterModal({ open, onClose, onApplyFilters, currentFilt
           </ScrollView>
 
           <View style={styles.modalActions}>
-            <Animated.View style={{ transform: [{ scale: scaleClear }] }}>
-              <Pressable
-                onPress={handleClearFilters}
-                onPressIn={() => pressIn(scaleClear)}
-                onPressOut={() => pressOut(scaleClear)}
-                style={styles.clearButton}
-              >
-                <Text style={styles.clearButtonText}>Limpar Filtros</Text>
-              </Pressable>
-            </Animated.View>
+            <Pressable
+              onPress={handleClearFilters}
+              style={styles.clearButton}
+            >
+              <Text style={styles.clearButtonText}>Limpar</Text>
+            </Pressable>
 
-            <Animated.View style={{ transform: [{ scale: scaleCancel }] }}>
-              <Pressable
-                onPress={onClose}
-                onPressIn={() => pressIn(scaleCancel)}
-                onPressOut={() => pressOut(scaleCancel)}
-                style={styles.cancelButton}
-              >
-                <Text style={styles.cancelButtonText}>Cancelar</Text>
-              </Pressable>
-            </Animated.View>
-
-            <Animated.View style={{ transform: [{ scale: scaleApply }] }}>
-              <Pressable
-                onPress={handleApply}
-                onPressIn={() => pressIn(scaleApply)}
-                onPressOut={() => pressOut(scaleApply)}
-                style={styles.applyButton}
-              >
-                <Text style={styles.applyButtonText}>Aplicar Filtros</Text>
-              </Pressable>
-            </Animated.View>
+            <Pressable
+              onPress={handleApply}
+              style={styles.applyButton}
+            >
+              <Text style={styles.applyButtonText}>Aplicar</Text>
+            </Pressable>
           </View>
         </View>
       </Animated.View>
@@ -206,12 +195,30 @@ const styles = StyleSheet.create({
   modalTitle: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    justifyContent: 'space-between',
     paddingHorizontal: 24,
     paddingTop: 24,
     paddingBottom: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
+  },
+  titleRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  closeButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#f5f5f5',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  closeButtonText: {
+    fontSize: 18,
+    color: '#666',
+    fontWeight: '600',
   },
   modalTitleText: {
     fontSize: 20,
@@ -262,10 +269,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 12,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: '#004D61',
     borderRadius: 8,
     fontSize: 14,
     backgroundColor: '#fff',
+    fontWeight: '500',
   },
   modalActions: {
     paddingHorizontal: 24,
@@ -274,43 +282,42 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#e0e0e0',
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    gap: 12,
+    gap: 16,
   },
   clearButton: {
-    backgroundColor: 'transparent',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+    backgroundColor: '#f5f5f5',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
     borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 48,
   },
   clearButtonText: {
     color: '#666',
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '500',
-  },
-  cancelButton: {
-    backgroundColor: 'transparent',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-  },
-  cancelButtonText: {
-    color: '#666',
-    fontSize: 14,
-    fontWeight: '500',
+    textAlign: 'center',
   },
   applyButton: {
-    backgroundColor: '#1976d2',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+    backgroundColor: '#004D61',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
     borderRadius: 8,
-    minWidth: 100,
+    flex: 1,
     alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 48,
   },
   applyButtonText: {
     color: '#fff',
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: 16,
+    fontWeight: '600',
+    textAlign: 'center',
   },
 });
