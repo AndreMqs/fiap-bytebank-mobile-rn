@@ -81,14 +81,29 @@ export const useStore = create<StoreState>((set, get) => ({
     const { transactions } = get();
     return transactions
       .filter(t => t.type === 'income')
-      .reduce((sum, t) => sum + t.value, 0);
+      .reduce((sum, t) => sum + (+t.value), 0);
   },
 
   getTotalExpense: () => {
     const { transactions } = get();
     return transactions
       .filter(t => t.type === 'expense')
-      .reduce((sum, t) => sum + t.value, 0);
+      .reduce((sum, t) => sum + (+t.value), 0);
+  },
+
+  getBalance: () => {
+    const { transactions } = get();
+    return transactions.reduce((acc, curr) => {
+      if (curr.type === 'income') {
+        return acc + (+curr.value);
+      }
+
+      if (curr.type === 'expense') {
+        return acc - (+curr.value);
+      }
+
+      return acc;
+    }, 0);
   },
 
   getCategoryData: () => {
@@ -99,7 +114,7 @@ export const useStore = create<StoreState>((set, get) => ({
       .filter(transaction => transaction.type === 'expense')
       .forEach(transaction => {
         const current = categoryMap.get(transaction.category) || 0;
-        categoryMap.set(transaction.category, current + transaction.value);
+        categoryMap.set(transaction.category, current + (+transaction.value));
       });
 
     const colors = ['#2196F3', '#9C27B0', '#E91E63', '#FF9800', '#4CAF50'];
