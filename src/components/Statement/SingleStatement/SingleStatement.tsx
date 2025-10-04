@@ -20,7 +20,8 @@ export default function SingleStatement(props: SingleStatementProps) {
 
   const handleSaveEdit = async () => {
     if (updateTransaction && userId) {
-      const numericValue = parseFloat(inputValue.replace(',', '.'));
+      const cleanValue = (inputValue || '').replace(',', '.');
+      const numericValue = parseFloat(cleanValue);
       
       if (!isNaN(numericValue) && numericValue !== value) {
         const transactionData = { value: numericValue };
@@ -31,10 +32,12 @@ export default function SingleStatement(props: SingleStatementProps) {
 
   const getInputValue = () => {
     if (isEditing && isFocused) {
-      return inputValue;
+      return inputValue || '';
     }
-    const num = parseFloat(inputValue);
+    
+    const num = parseFloat(inputValue || '0');
     if (Number.isNaN(num)) return parseMoneyValue(0);
+    
     const formattedValue = parseMoneyValue(num);
     return type === 'expense' ? `- ${formattedValue}` : formattedValue;
   };
