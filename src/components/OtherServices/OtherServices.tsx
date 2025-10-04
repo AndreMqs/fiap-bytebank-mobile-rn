@@ -1,8 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
-import BackgroundDesktop from '../../images/BackgroundDesktop.svg';
-import BackgroundMobile from '../../images/BackgroundMobile.svg';
-import BackgroundTablet from '../../images/BackgroundTablet.svg';
 import Card from '../../images/Card.svg';
 import Donation from '../../images/Donation.svg';
 import Financial from '../../images/Financial.svg';
@@ -34,8 +31,6 @@ export default function OtherServices() {
     Animated.timing(fade, { toValue: 1, duration: 220, useNativeDriver: true }).start();
   }, [fade]);
 
-  const Background = isMobile ? BackgroundMobile : isTablet ? BackgroundTablet : BackgroundDesktop;
-
   const cardBasis = useMemo(() => `${100 / cols}%`, [cols]);
 
   if (showMyCards) {
@@ -44,10 +39,6 @@ export default function OtherServices() {
 
   return (
     <Animated.View style={[styles.otherServicesContainer, { opacity: fade }]}>
-      <View pointerEvents="none" style={styles.bgDecoration}>
-        <Background width="100%" height="100%" preserveAspectRatio="xMaxYMin meet" />
-      </View>
-
       <Text style={styles.title}>Confira os serviços disponíveis</Text>
       <View style={[styles.grid, { gap: width <= 425 ? 16 : 24 }]}>
         {services.map((service) => {

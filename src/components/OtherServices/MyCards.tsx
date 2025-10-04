@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import BackgroundDesktop from '../../images/BackgroundDesktop.svg';
 import CardBlue from '../../images/CardBlue.svg';
 import CardGray from '../../images/CardGray.png';
 
@@ -23,10 +22,6 @@ export default function MyCards({ onBack }: { onBack: () => void }) {
 
   return (
     <Animated.View style={[styles.myCardsContainer, { opacity: fade }]}>
-      <View pointerEvents="none" style={styles.bgDecoration}>
-        <BackgroundDesktop width="100%" height="100%" preserveAspectRatio="xMaxYMin meet" />
-      </View>
-
       <View style={styles.content}>
         <View style={styles.titleWrapper}>
           <Pressable onPress={onBack} style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}>
