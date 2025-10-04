@@ -93,12 +93,10 @@ export default function NewTransaction({
 
   return (
     <Animated.View style={[styles.transactionContainer, { opacity: fade }]}>
-      {/* BG atrás */}
       <View pointerEvents="none" style={styles.bgDecoration}>
         <TransactionBackground width="100%" height="100%" preserveAspectRatio="xMaxYMax meet" />
       </View>
 
-      {/* Conteúdo centralizado */}
       <View style={styles.transactionContent} pointerEvents="auto">
         <View style={styles.contentInner}>
           <Text style={styles.title}>Nova transação</Text>
@@ -135,8 +133,11 @@ export default function NewTransaction({
                   onPressOut={() => pressOut(scaleClear)}
                   disabled={!formData.type && !formData.category && !formData.value}
                   style={[
-                    styles.clearButton,
-                    !formData.type && !formData.category && !formData.value && styles.clearButtonDisabled,
+                    styles.buttonBase,
+                    isMobile ? styles.buttonFlex : styles.clearButtonFixed,
+                    (!formData.type && !formData.category && !formData.value)
+                      ? styles.clearButtonDisabled
+                      : styles.clearButtonBg,
                   ]}
                 >
                   <Text style={styles.clearButtonText}>Limpar</Text>
@@ -150,7 +151,11 @@ export default function NewTransaction({
                   onPress={clearCSV}
                   onPressIn={() => pressIn(scaleClear)}
                   onPressOut={() => pressOut(scaleClear)}
-                  style={styles.clearButton}
+                  style={[
+                    styles.buttonBase,
+                    isMobile ? styles.buttonFlex : styles.clearButtonFixed,
+                    styles.clearButtonBg,
+                  ]}
                 >
                   <Text style={styles.clearButtonText}>Limpar CSV</Text>
                 </Pressable>
@@ -163,7 +168,11 @@ export default function NewTransaction({
                 onPressIn={() => pressIn(scaleFinish)}
                 onPressOut={() => pressOut(scaleFinish)}
                 disabled={!formIsValid || disabled}
-                style={[styles.finishTransaction, (!formIsValid || disabled) && styles.finishTransactionDisabled]}
+                style={[
+                  styles.buttonBase,
+                  isMobile ? styles.buttonFlex : styles.finishButtonFixed,
+                  (!formIsValid || disabled) ? styles.finishTransactionDisabled : styles.finishButtonBg,
+                ]}
               >
                 <Text style={styles.finishTransactionText}>{buttonText}</Text>
               </Pressable>
@@ -183,20 +192,17 @@ const styles = StyleSheet.create({
     position: 'relative',
     overflow: 'hidden',
   },
-
   transactionContent: {
     zIndex: 1,
     width: '100%',
     alignItems: 'center',
   },
-
   contentInner: {
     width: '100%',
-    maxWidth: 440, // controla largura centralizada
+    maxWidth: 440,
     gap: 24,
     alignSelf: 'center',
   },
-
   title: {
     fontSize: 25,
     fontWeight: '700',
@@ -205,44 +211,59 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     alignSelf: 'center',
   },
-
   fullWidth: {
     width: '100%',
   },
-
   buttonContainer: {
     flexDirection: 'row',
     gap: 12,
     width: '100%',
-    justifyContent: 'center', // centraliza os botões
+    maxWidth: 440,
+    alignSelf: 'center',
+    justifyContent: 'center',
     alignItems: 'center',
     marginTop: 16,
     marginBottom: 20,
     paddingBottom: 10,
   },
-
-  clearButton: {
+  buttonBase: {
+    height: 48,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonFlex: {
+    flex: 1,
+    minWidth: 120,
+  },
+  clearButtonFixed: {
     width: 150,
-    height: 48,
-    borderRadius: 8,
-    backgroundColor: '#f44336',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
-  clearButtonDisabled: { backgroundColor: '#ccc' },
-  clearButtonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
-
-  finishTransaction: {
+  finishButtonFixed: {
     width: 200,
-    height: 48,
-    borderRadius: 8,
-    backgroundColor: '#004D61',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
-  finishTransactionDisabled: { backgroundColor: '#ccc' },
-  finishTransactionText: { color: '#fff', fontSize: 16, fontWeight: '600' },
-
+  clearButtonBg: {
+    backgroundColor: '#f44336',
+  },
+  clearButtonDisabled: {
+    backgroundColor: '#ccc',
+  },
+  clearButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  finishButtonBg: {
+    backgroundColor: '#004D61',
+  },
+  finishTransactionDisabled: {
+    backgroundColor: '#ccc',
+  },
+  finishTransactionText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
   bgDecoration: {
     position: 'absolute',
     zIndex: 0,
