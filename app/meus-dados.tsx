@@ -77,7 +77,7 @@ export default function MeusDadosScreen() {
 
   return (
     <LinearGradient
-      colors={['#667eea', '#764ba2']}
+      colors={['#004D61', '#E4EDE3']}
       style={styles.container}
     >
       <KeyboardAvoidingView

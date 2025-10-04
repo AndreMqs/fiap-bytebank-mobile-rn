@@ -62,7 +62,7 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        <LinearGradient colors={['#667eea', '#764ba2']} style={styles.header}>
+        <LinearGradient colors={['#004D61', '#E4EDE3']} style={styles.header}>
           <View style={styles.headerContent}>
             <View>
               <Text style={styles.greeting}>Olá, {firstName}! 👋</Text>

@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import Eye from '../../images/Eye.svg';
-import SaldoBackground from '../../images/SaldoBackground.svg';
 import { parseDateString } from '../../utils/dateUtils';
 import { parseMoneyValue } from '../../utils/stringUtils';
 
@@ -21,12 +20,7 @@ export default function Summary({ username, money }: SummaryProps) {
 
   return (
     <View style={[styles.summaryContainer, isMobile && styles.summaryContainerMobile]}>
-      <View pointerEvents="none" style={styles.bg}>
-        <SaldoBackground width="100%" height="100%" preserveAspectRatio="xMinYMax meet" />
-      </View>
-
       <View style={[styles.left, isMobile && styles.leftMobile]}>
-        <Text style={styles.userName}>{`Olá, ${username}! 👋`}</Text>
         <Text style={styles.date}>{dateText}</Text>
       </View>
 
