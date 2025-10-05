@@ -1,6 +1,6 @@
 Bem-vindos!
-Esse é o projeto da fase 3 da Pós-Tech Fiap. Nós desenvolvemos a aplicação utilizando React-Native com o Expo
-Para iniciar o projeto
+Esse é o projeto da fase 3 da Pós-Tech Fiap. Nós desenvolvemos a aplicação utilizando React-Native com o Expo.
+Para iniciar o projeto:
 
 1. Instale as dependências e inicie o app
 
