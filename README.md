@@ -16,6 +16,6 @@ Para iniciar o projeto:
 
 No terminal você verá um QR Code. Escaneie-o utilizando o aplicativo do expo, e o app irá abrir no seu celular.
 
-Nós utilizamos o Firebase para salvar os dados e alimentar as aplicações
+Nós utilizamos o Firebase para salvar os dados e alimentar as aplicações.
 Para facilitar o teste, não adicionamos a necessidade de um email de verdade ou senha forte, portanto podem criar usuários com emails falsos e senhas simples.
-Junto com o projeto será entregue um vídeo apresentando as funcionalidades
+Junto com o projeto será entregue um vídeo apresentando as funcionalidades.
