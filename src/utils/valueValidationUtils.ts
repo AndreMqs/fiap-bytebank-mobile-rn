@@ -6,7 +6,7 @@ export const useValueValidation = () => {
     }
     
 
-    const numericValue = parseFloat(value.replace(',', '.'));
+    const numericValue = parseFloat((value || '0').replace(',', '.'));
     if (value && (Number.isNaN(numericValue) || numericValue <= 0)) {
       return { isValid: false, error: 'Valor deve ser maior que zero' };
     }
@@ -19,7 +19,7 @@ export const useValueValidation = () => {
   };
 
   const parseNumericValue = (value: string): number => {
-    return parseFloat(value.replace(',', '.'));
+    return parseFloat((value || '0').replace(',', '.'));
   };
 
   return {

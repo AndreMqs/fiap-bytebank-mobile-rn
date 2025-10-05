@@ -83,7 +83,7 @@ export default function CSVUpload({ onTransactionsLoaded }: CSVUploadProps) {
           throw new Error(`Linha ${i + 2}: Tipo inválido "${type}". Use: income/expense ou receita/despesa`);
         }
         
-        const parsedValue = parseFloat(value.replace(',', '.'));
+        const parsedValue = parseFloat((value || '0').replace(',', '.'));
         if (isNaN(parsedValue) || parsedValue <= 0) {
           throw new Error(`Linha ${i + 2}: Valor inválido "${value}". Use um número maior que 0`);
         }

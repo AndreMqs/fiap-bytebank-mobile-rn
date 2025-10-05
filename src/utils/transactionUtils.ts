@@ -6,7 +6,7 @@ export const createTransactionFromForm = (
   value: string,
   date: string
 ): TransactionData => {
-  const numericValue = parseFloat(value.replace(',', '.'));
+  const numericValue = parseFloat((value || '0').replace(',', '.'));
   
   return {
     type: type === 'Receita' ? 'income' : 'expense',

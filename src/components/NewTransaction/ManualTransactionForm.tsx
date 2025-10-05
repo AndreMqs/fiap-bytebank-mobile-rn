@@ -15,7 +15,7 @@ export const ManualTransactionForm = ({
 }: ManualTransactionFormProps) => {
   const inputValue = useMemo(() => {
     if (isFocused) return formData.value;
-    const value = parseFloat(formData.value.replace(',', '.'));
+    const value = parseFloat((formData.value || '0').replace(',', '.'));
     if (Number.isNaN(value) || value <= 0) return parseMoneyValue(0);
     return parseMoneyValue(value);
   }, [formData.value, isFocused]);

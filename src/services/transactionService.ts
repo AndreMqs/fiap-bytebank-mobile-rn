@@ -17,7 +17,7 @@ export class TransactionService {
       const userTransactionsRef = collection(db, this.USERS_COLLECTION, userId, this.TRANSACTIONS_SUBCOLLECTION);
       const docRef = await addDoc(userTransactionsRef, transactionWithTimestamps);
       
-      const numericValue = parseFloat(transactionData.value.replace(',', '.'));
+      const numericValue = parseFloat((transactionData.value || '0').replace(',', '.'));
       
       const newTransaction: Transaction = {
         id: docRef.id,
@@ -72,6 +72,7 @@ export class TransactionService {
         ...transactionData,
         updatedAt: new Date(),
       };
+      
       await updateDoc(transactionRef, updateData);
     } catch (error) {
       console.error('Erro ao atualizar transação:', error);
@@ -81,7 +82,6 @@ export class TransactionService {
 
   static async deleteTransaction(transactionId: string, userId: string): Promise<void> {
     try {
-    
       const transactionRef = doc(db, this.USERS_COLLECTION, userId, this.TRANSACTIONS_SUBCOLLECTION, transactionId);
       await deleteDoc(transactionRef);
     } catch (error) {
@@ -92,7 +92,6 @@ export class TransactionService {
 
   static async getTransactionsByCategory(userId: string, category: string): Promise<Transaction[]> {
     try {
-
       const userTransactionsRef = collection(db, this.USERS_COLLECTION, userId, this.TRANSACTIONS_SUBCOLLECTION);
       const q = query(
         userTransactionsRef,
@@ -130,7 +129,6 @@ export class TransactionService {
     endDate: string
   ): Promise<Transaction[]> {
     try {
-
       const userTransactionsRef = collection(db, this.USERS_COLLECTION, userId, this.TRANSACTIONS_SUBCOLLECTION);
       const q = query(
         userTransactionsRef,

@@ -1,10 +1,10 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect } from 'react';
 import {
-  ActivityIndicator,
-  Alert,
-  StyleSheet,
-  View
+    ActivityIndicator,
+    Alert,
+    StyleSheet,
+    View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import EmptyState from '../../src/components/Statement/EmptyState/EmptyState';
