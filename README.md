@@ -2,13 +2,13 @@ Bem-vindos!
 Esse é o projeto da fase 3 da Pós-Tech Fiap. Nós desenvolvemos a aplicação utilizando React-Native com o Expo.
 Para iniciar o projeto:
 
-1. Instale as dependências e inicie o app
+1. Instale as dependências
 
    ```bash
    npm install
    ```
 
-2. Start the app
+2. Inicie o app
 
    ```bash
    npx expo start
