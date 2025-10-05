@@ -1,10 +1,8 @@
-# Welcome to your Expo app 👋
+Bem-vindos!
+Esse é o projeto da fase 3 da Pós-Tech Fiap. Nós desenvolvemos a aplicação utilizando React-Native com o Expo
+Para iniciar o projeto
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
-
-## Get started
-
-1. Install dependencies
+1. Instale as dependências e inicie o app
 
    ```bash
    npm install
@@ -16,35 +14,8 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+No terminal você verá um QR Code. Escaneie-o utilizando o aplicativo do expo, e o app irá abrir no seu celular.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Nós utilizamos o Firebase para salvar os dados e alimentar as aplicações
+Para facilitar o teste, não adicionamos a necessidade de um email de verdade ou senha forte, portanto podem criar usuários com emails falsos e senhas simples.
+Junto com o projeto será entregue um vídeo apresentando as funcionalidades
