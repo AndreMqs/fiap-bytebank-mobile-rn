@@ -55,10 +55,29 @@ export default function ExtratoScreen() {
   };
 
   const handleUpdateTransaction = async (id: string, userId: string, transactionData: any) => {
+    if (!id || typeof id !== 'string' || id.trim() === '') {
+      console.error('❌ [ExtratoScreen] Transaction ID is missing or invalid:', id);
+      Alert.alert('Erro', 'ID da transação é obrigatório e deve ser uma string válida.');
+      return;
+    }
+    
+    if (!userId || typeof userId !== 'string' || userId.trim() === '') {
+      console.error('❌ [ExtratoScreen] User ID is missing or invalid:', userId);
+      Alert.alert('Erro', 'ID do usuário é obrigatório e deve ser uma string válida.');
+      return;
+    }
+
+    if (!transactionData || typeof transactionData !== 'object') {
+      console.error('❌ [ExtratoScreen] Transaction data is missing or invalid:', transactionData);
+      Alert.alert('Erro', 'Dados da transação são obrigatórios.');
+      return;
+    }
+
     try {
       await updateTransaction(id, userId, transactionData);
       Alert.alert('Sucesso', 'Transação atualizada com sucesso!');
     } catch (err) {
+      console.error('❌ [ExtratoScreen] Error in handleUpdateTransaction:', err);
       Alert.alert('Erro', 'Não foi possível atualizar a transação.');
     }
   };

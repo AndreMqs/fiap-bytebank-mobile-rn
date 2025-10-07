@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { TransactionService } from '../services/transactionService';
 import { StoreState } from '../types/store';
-import { TransactionData, TransactionFormData } from '../types/transaction';
+import { TransactionData, UpdateTransactionRequest } from '../types/transaction';
 
 export const useStore = create<StoreState>((set, get) => ({
   user: null,
@@ -37,25 +37,54 @@ export const useStore = create<StoreState>((set, get) => ({
   },
 
   updateTransaction: async (transactionId: string, userId: string, transactionData: Partial<TransactionData>) => {
+    if (!transactionId || typeof transactionId !== 'string' || transactionId.trim() === '') {
+      set({ 
+        error: 'ID da transação é obrigatório e deve ser uma string válida', 
+        isLoading: false 
+      });
+      return;
+    }
+    
+    if (!userId || typeof userId !== 'string' || userId.trim() === '') {
+      set({ 
+        error: 'ID do usuário é obrigatório e deve ser uma string válida', 
+        isLoading: false 
+      });
+      return;
+    }
+
+    if (!transactionData || Object.keys(transactionData).length === 0) {
+      set({ 
+        error: 'Dados para atualização são obrigatórios', 
+        isLoading: false 
+      });
+      return;
+    }
+
     set({ isLoading: true, error: null });
+
     try {
-      const firebaseData: Partial<TransactionFormData> = {};
-      
-      if (transactionData.type !== undefined) {
-        firebaseData.type = transactionData.type;
+      const updateRequest: UpdateTransactionRequest = {
+        id: transactionId,
+        userId: userId,
+        data: {
+          value: transactionData.value,
+          type: transactionData.type,
+          category: transactionData.category,
+          date: transactionData.date,
+        }
+      };
+
+      const response = await TransactionService.updateTransaction(updateRequest);
+
+      if (!response.success) {
+        set({ 
+          error: response.error || 'Erro ao atualizar transação', 
+          isLoading: false 
+        });
+        return;
       }
-      if (transactionData.category !== undefined) {
-        firebaseData.category = transactionData.category;
-      }
-      if (transactionData.value !== undefined) {
-        firebaseData.value = transactionData.value.toString();
-      }
-      if (transactionData.date !== undefined) {
-        firebaseData.date = transactionData.date;
-      }
-      
-      await TransactionService.updateTransaction(transactionId, userId, firebaseData);
-      
+
       set(state => ({
         transactions: state.transactions.map(t => 
           t.id === transactionId 
@@ -63,10 +92,15 @@ export const useStore = create<StoreState>((set, get) => ({
             : t
         ),
         isLoading: false,
+        error: null
       }));
+
     } catch (error) {
-      console.error('Error updating transaction:', error);
-      set({ error: 'Erro ao atualizar transação', isLoading: false });
+      console.error('❌ [useStore] Error updating transaction:', error);
+      set({ 
+        error: error instanceof Error ? error.message : 'Erro ao atualizar transação', 
+        isLoading: false 
+      });
     }
   },
 

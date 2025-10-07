@@ -48,12 +48,7 @@ export const useTransactionForm = () => {
 
   const addTransactionWithFirebase = async (transactionData: TransactionData) => {
     try {
-      // Salvar no store local
-      addTransaction(transactionData);
-      
-      // Salvar no Firebase se o usuário estiver autenticado
       if (user?.uid) {
-        // Converter TransactionData para TransactionFormData (Firebase espera value como string)
         const firebaseTransactionData: TransactionFormData = {
           type: transactionData.type,
           category: transactionData.category,
@@ -61,14 +56,14 @@ export const useTransactionForm = () => {
           date: transactionData.date
         };
         
-        await TransactionService.addTransaction(firebaseTransactionData, user.uid);
-        console.log('Transação salva no Firebase com sucesso');
+        const savedTransaction = await TransactionService.addTransaction(firebaseTransactionData, user.uid);
+        addTransaction(savedTransaction);
       } else {
-        console.warn('Usuário não autenticado, transação salva apenas localmente');
+        addTransaction(transactionData);
       }
     } catch (error) {
       console.error('Erro ao salvar transação no Firebase:', error);
-      // Mesmo se der erro no Firebase, a transação já foi salva no store local
+      addTransaction(transactionData);
     }
   };
 
