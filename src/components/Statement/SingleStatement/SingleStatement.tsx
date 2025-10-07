@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Animated, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import Delete from '../../../images/Delete.svg';
 import { SingleStatementProps } from '../../../types/statement';
 import { parseMoneyValue } from '../../../utils/stringUtils';
@@ -17,9 +17,9 @@ export default function SingleStatement(props: SingleStatementProps) {
   const handleDelete = () => {
     deleteTransaction(transaction.id, userId ?? '');
   };
-
+  
   const handleSaveEdit = async () => {
-    if (updateTransaction && userId) {
+    if (updateTransaction && userId && transaction.id !== undefined) {
       const cleanValue = (inputValue || '').replace(',', '.');
       const numericValue = parseFloat(cleanValue);
       
@@ -27,9 +27,11 @@ export default function SingleStatement(props: SingleStatementProps) {
         const transactionData = { value: numericValue };
         await updateTransaction(transaction.id, userId, transactionData);
       }
+    } else {
+      Alert.alert('Houve um erro ao atualizar a transação. Tente novamente mais tarde');
     }
   };
-
+  
   const getInputValue = () => {
     if (isEditing && isFocused) {
       return inputValue || '';
@@ -41,6 +43,12 @@ export default function SingleStatement(props: SingleStatementProps) {
     const formattedValue = parseMoneyValue(num);
     return type === 'expense' ? `- ${formattedValue}` : formattedValue;
   };
+  
+  useEffect(() => {
+    if (!isEditing && parseFloat(inputValue) !== value) {
+      handleSaveEdit();
+    }
+  }, [isEditing]);
 
   const formatDate = (dateString: string) => {
     const [year, month, day] = dateString.split('-');
