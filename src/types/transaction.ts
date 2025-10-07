@@ -13,6 +13,23 @@ export interface TransactionData {
   date: string;
 }
 
+export interface UpdateTransactionRequest {
+  id: string;
+  userId: string;
+  data: {
+    value?: number;
+    type?: 'income' | 'expense';
+    category?: 'Alimentação' | 'Moradia' | 'Saúde' | 'Estudo' | 'Transporte';
+    date?: string;
+  };
+}
+
+export interface UpdateTransactionResponse {
+  success: boolean;
+  error?: string;
+  transaction?: TransactionData;
+}
+
 export interface Transaction {
   id: string;
   type: 'income' | 'expense';

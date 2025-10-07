@@ -1,6 +1,6 @@
 import { addDoc, collection, deleteDoc, doc, getDocs, orderBy, query, updateDoc, where } from 'firebase/firestore';
 import { db } from '../lib/firebase';
-import { Transaction, TransactionFormData } from '../types/transaction';
+import { Transaction, TransactionFormData, UpdateTransactionRequest, UpdateTransactionResponse } from '../types/transaction';
 
 export class TransactionService {
   private static readonly USERS_COLLECTION = 'users';
@@ -65,18 +65,94 @@ export class TransactionService {
       throw new Error('Falha ao carregar transações');
     }
   }
-  static async updateTransaction(transactionId: string, userId: string, transactionData: Partial<TransactionFormData>): Promise<void> {
+  static async updateTransaction(request: UpdateTransactionRequest): Promise<UpdateTransactionResponse> {
     try {
-      const transactionRef = doc(db, this.USERS_COLLECTION, userId, this.TRANSACTIONS_SUBCOLLECTION, transactionId);
-      const updateData = {
-        ...transactionData,
+      if (!request.id || typeof request.id !== 'string' || request.id.trim() === '') {
+        return {
+          success: false,
+          error: 'ID da transação é obrigatório e deve ser uma string válida'
+        };
+      }
+      
+      if (!request.userId || typeof request.userId !== 'string' || request.userId.trim() === '') {
+        return {
+          success: false,
+          error: 'ID do usuário é obrigatório e deve ser uma string válida'
+        };
+      }
+
+      if (!request.data || Object.keys(request.data).length === 0) {
+        return {
+          success: false,
+          error: 'Dados para atualização são obrigatórios'
+        };
+      }
+
+      const updateData: any = {
         updatedAt: new Date(),
       };
-      
+
+      if (request.data.value !== undefined) {
+        if (typeof request.data.value !== 'number' || request.data.value < 0) {
+          return {
+            success: false,
+            error: 'Valor deve ser um número positivo'
+          };
+        }
+        updateData.value = request.data.value.toString();
+      }
+
+      if (request.data.type !== undefined) {
+        if (!['income', 'expense'].includes(request.data.type)) {
+          return {
+            success: false,
+            error: 'Tipo deve ser "income" ou "expense"'
+          };
+        }
+        updateData.type = request.data.type;
+      }
+
+      if (request.data.category !== undefined) {
+        const validCategories = ['Alimentação', 'Moradia', 'Saúde', 'Estudo', 'Transporte'];
+        if (!validCategories.includes(request.data.category)) {
+          return {
+            success: false,
+            error: `Categoria deve ser uma das seguintes: ${validCategories.join(', ')}`
+          };
+        }
+        updateData.category = request.data.category;
+      }
+
+      if (request.data.date !== undefined) {
+        if (typeof request.data.date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(request.data.date)) {
+          return {
+            success: false,
+            error: 'Data deve estar no formato YYYY-MM-DD'
+          };
+        }
+        updateData.date = request.data.date;
+      }
+
+      const transactionRef = doc(db, this.USERS_COLLECTION, request.userId, this.TRANSACTIONS_SUBCOLLECTION, request.id);
       await updateDoc(transactionRef, updateData);
+
+      return {
+        success: true,
+        transaction: {
+          id: request.id,
+          type: request.data.type || 'income',
+          value: request.data.value || 0,
+          category: request.data.category || 'Alimentação',
+          date: request.data.date || new Date().toISOString().split('T')[0],
+        } as Transaction
+      };
+
     } catch (error) {
       console.error('Erro ao atualizar transação:', error);
-      throw new Error('Falha ao atualizar transação');
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Falha ao atualizar transação'
+      };
     }
   }
 

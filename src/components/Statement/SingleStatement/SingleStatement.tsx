@@ -19,14 +19,48 @@ export default function SingleStatement(props: SingleStatementProps) {
   };
 
   const handleSaveEdit = async () => {
-    if (updateTransaction && userId) {
-      const cleanValue = (inputValue || '').replace(',', '.');
-      const numericValue = parseFloat(cleanValue);
-      
-      if (!isNaN(numericValue) && numericValue !== value) {
-        const transactionData = { value: numericValue };
-        await updateTransaction(transaction.id, userId, transactionData);
-      }
+    if (!transaction) {
+      console.error('❌ [SingleStatement] Transaction object is missing');
+      return;
+    }
+
+    if (!transaction.id || typeof transaction.id !== 'string' || transaction.id.trim() === '') {
+      console.error('❌ [SingleStatement] Transaction ID is missing or invalid:', transaction.id);
+      return;
+    }
+    
+    if (!userId || typeof userId !== 'string' || userId.trim() === '') {
+      console.error('❌ [SingleStatement] User ID is missing or invalid:', userId);
+      return;
+    }
+    
+    if (!updateTransaction || typeof updateTransaction !== 'function') {
+      console.error('❌ [SingleStatement] Update transaction function is missing or invalid');
+      return;
+    }
+
+    const cleanValue = (inputValue || '').replace(',', '.');
+    const numericValue = parseFloat(cleanValue);
+    
+    if (isNaN(numericValue)) {
+      console.error('❌ [SingleStatement] Invalid numeric value:', inputValue);
+      return;
+    }
+
+    if (numericValue < 0) {
+      console.error('❌ [SingleStatement] Value cannot be negative:', numericValue);
+      return;
+    }
+
+    if (numericValue === value) {
+      return;
+    }
+
+    try {
+      const transactionData = { value: numericValue };
+      await updateTransaction(transaction.id, userId, transactionData);
+    } catch (error) {
+      console.error('❌ [SingleStatement] Error updating transaction:', error);
     }
   };
 
